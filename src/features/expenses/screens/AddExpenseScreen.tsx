@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View, TextInput, TouchableOpacity,
   StyleSheet, SafeAreaView, StatusBar,
   ScrollView, KeyboardAvoidingView, Platform,
-  Modal,
+  Modal, ActivityIndicator,
 } from 'react-native';
 import { Text } from '../../../components/Text';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
@@ -13,6 +13,8 @@ import {
 } from 'lucide-react-native';
 import { AddExpenseScreenProps } from '../../../navigation/types';
 import { toast } from '../../../store/toastStore';
+import { useSaveExpense } from '../hooks/useSaveExpense';
+import { useThemeColors, ThemeColors } from '../../../theme/ThemeContext';
 
 // Spanish locale
 LocaleConfig.locales['es'] = {
@@ -24,36 +26,26 @@ LocaleConfig.locales['es'] = {
 };
 LocaleConfig.defaultLocale = 'es';
 
-const C = {
-  canvas: '#F4F2EC',
-  ink: '#0E1614',
-  accent: '#0E5C3F',
-  muted: '#6B7280',
-  border: '#E5E3DC',
-  inputBg: '#FFFFFF',
-  cardBg: '#F7F5EE',
-};
-
-const CAL_THEME = {
-  backgroundColor: C.canvas,
-  calendarBackground: C.canvas,
-  textSectionTitleColor: C.muted,
-  selectedDayBackgroundColor: C.ink,
+const makeCalTheme = (colors: ThemeColors) => ({
+  backgroundColor: colors.canvas,
+  calendarBackground: colors.canvas,
+  textSectionTitleColor: colors.muted,
+  selectedDayBackgroundColor: colors.ink,
   selectedDayTextColor: '#fff',
-  todayTextColor: C.accent,
+  todayTextColor: colors.accent,
   todayBackgroundColor: 'transparent',
-  dayTextColor: C.ink,
+  dayTextColor: colors.ink,
   textDisabledColor: '#C9C7BE',
-  arrowColor: C.ink,
-  disabledArrowColor: C.border,
-  monthTextColor: C.ink,
+  arrowColor: colors.ink,
+  disabledArrowColor: colors.border,
+  monthTextColor: colors.ink,
   textDayFontWeight: '500' as any,
   textMonthFontWeight: '800' as any,
   textDayHeaderFontWeight: '600' as any,
   textDayFontSize: 14,
   textMonthFontSize: 16,
   textDayHeaderFontSize: 12,
-};
+});
 
 type Category = { id: string; label: string; Icon: any; color: string };
 
@@ -79,6 +71,11 @@ const formatDisplay = (dateStr: string): string => {
 };
 
 export const AddExpenseScreen = ({ navigation }: AddExpenseScreenProps) => {
+  const colors = useThemeColors();
+  const s = useMemo(() => make_s(colors), [colors]);
+  const calTheme = useMemo(() => makeCalTheme(colors), [colors]);
+
+  const saveExpense = useSaveExpense();
   const [amountRaw, setAmountRaw] = useState('');
   const [description, setDescription] = useState('');
   const [selectedCat, setSelectedCat] = useState<string | null>(null);
@@ -98,10 +95,30 @@ export const AddExpenseScreen = ({ navigation }: AddExpenseScreenProps) => {
     && description.trim().length >= 2
     && !!selectedCat;
 
+  const isSaving = saveExpense.isPending;
+
   const handleSave = () => {
-    if (!isValid) return;
-    toast.success('Gasto registrado', `${description.trim()} · ${amountDisplay}`);
-    navigation.goBack();
+    if (!isValid || isSaving) return;
+    const date = new Date(selectedDate + 'T12:00:00');
+    saveExpense.mutate(
+      {
+        description: description.trim(),
+        amount:      parseFloat(amountRaw),
+        category:    selectedCat!,
+        supplier:    supplier.trim() || undefined,
+        note:        note.trim() || undefined,
+        date,
+      },
+      {
+        onSuccess: () => {
+          toast.success('Gasto registrado', `${description.trim()} · ${amountDisplay}`);
+          navigation.goBack();
+        },
+        onError: () => {
+          toast.error('Error', 'No se pudo guardar el gasto');
+        },
+      },
+    );
   };
 
   const openCalendar = () => {
@@ -116,7 +133,7 @@ export const AddExpenseScreen = ({ navigation }: AddExpenseScreenProps) => {
 
   return (
     <SafeAreaView style={s.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={C.canvas} />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.canvas} />
       <KeyboardAvoidingView
         style={s.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -124,13 +141,15 @@ export const AddExpenseScreen = ({ navigation }: AddExpenseScreenProps) => {
         {/* ── Top bar ── */}
         <View style={s.topBar}>
           <TouchableOpacity style={s.backBtn} onPress={() => navigation.goBack()}>
-            <ChevronLeft size={20} color={C.ink} strokeWidth={2} />
+            <ChevronLeft size={20} color={colors.ink} strokeWidth={2} />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[s.saveBtn, !isValid && s.saveBtnDisabled]}
+            style={[s.saveBtn, (!isValid || isSaving) && s.saveBtnDisabled]}
             onPress={handleSave}
-            disabled={!isValid}>
-            <Text style={s.saveBtnText}>Guardar</Text>
+            disabled={!isValid || isSaving}>
+            {isSaving
+              ? <ActivityIndicator size="small" color="#fff" />
+              : <Text style={s.saveBtnText}>Guardar</Text>}
           </TouchableOpacity>
         </View>
 
@@ -167,8 +186,8 @@ export const AddExpenseScreen = ({ navigation }: AddExpenseScreenProps) => {
                     style={[s.catCard, active && { borderColor: cat.color, backgroundColor: `${cat.color}12` }]}
                     onPress={() => setSelectedCat(active ? null : cat.id)}
                     activeOpacity={0.75}>
-                    <View style={[s.catIcon, { backgroundColor: active ? cat.color : C.cardBg }]}>
-                      <cat.Icon size={17} color={active ? '#fff' : C.muted} strokeWidth={1.75} />
+                    <View style={[s.catIcon, { backgroundColor: active ? cat.color : colors.cardBg }]}>
+                      <cat.Icon size={17} color={active ? '#fff' : colors.muted} strokeWidth={1.75} />
                     </View>
                     <Text style={[s.catLabel, active && { color: cat.color, fontWeight: '700' }]}>
                       {cat.label}
@@ -188,7 +207,7 @@ export const AddExpenseScreen = ({ navigation }: AddExpenseScreenProps) => {
                 value={description}
                 onChangeText={setDescription}
                 placeholder="CFE bimestral"
-                placeholderTextColor={C.muted}
+                placeholderTextColor={colors.muted}
               />
             </View>
             <View style={s.divider} />
@@ -199,7 +218,7 @@ export const AddExpenseScreen = ({ navigation }: AddExpenseScreenProps) => {
                 value={supplier}
                 onChangeText={setSupplier}
                 placeholder="Opcional"
-                placeholderTextColor={C.muted}
+                placeholderTextColor={colors.muted}
               />
             </View>
             <View style={s.divider} />
@@ -209,7 +228,7 @@ export const AddExpenseScreen = ({ navigation }: AddExpenseScreenProps) => {
               <Text style={s.fieldLabel}>Fecha</Text>
               <View style={s.dateValue}>
                 <Text style={s.dateText}>{formatDisplay(selectedDate)}</Text>
-                <CalendarDays size={16} color={C.muted} strokeWidth={1.75} />
+                <CalendarDays size={16} color={colors.muted} strokeWidth={1.75} />
               </View>
             </TouchableOpacity>
           </View>
@@ -221,7 +240,7 @@ export const AddExpenseScreen = ({ navigation }: AddExpenseScreenProps) => {
               value={note}
               onChangeText={setNote}
               placeholder="Agregar nota (opcional)"
-              placeholderTextColor={C.muted}
+              placeholderTextColor={colors.muted}
               multiline
               numberOfLines={3}
               textAlignVertical="top"
@@ -234,11 +253,13 @@ export const AddExpenseScreen = ({ navigation }: AddExpenseScreenProps) => {
         {/* ── Footer ── */}
         <View style={s.footer}>
           <TouchableOpacity
-            style={[s.primaryBtn, !isValid && s.primaryBtnDisabled]}
+            style={[s.primaryBtn, (!isValid || isSaving) && s.primaryBtnDisabled]}
             onPress={handleSave}
-            disabled={!isValid}
+            disabled={!isValid || isSaving}
             activeOpacity={0.85}>
-            <Text style={s.primaryBtnText}>Registrar gasto</Text>
+            {isSaving
+              ? <ActivityIndicator size="small" color="#fff" />
+              : <Text style={s.primaryBtnText}>Registrar gasto</Text>}
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -267,18 +288,18 @@ export const AddExpenseScreen = ({ navigation }: AddExpenseScreenProps) => {
             markedDates={{
               [pendingDate]: {
                 selected: true,
-                selectedColor: C.ink,
+                selectedColor: colors.ink,
                 selectedTextColor: '#fff',
               },
               [todayStr]: pendingDate !== todayStr
-                ? { marked: true, dotColor: C.accent }
+                ? { marked: true, dotColor: colors.accent }
                 : undefined,
             }}
-            theme={CAL_THEME}
+            theme={calTheme}
             renderArrow={(direction: 'left' | 'right') =>
               direction === 'left'
-                ? <ChevronLeft size={20} color={C.ink} strokeWidth={2} />
-                : <ChevronRight size={20} color={C.ink} strokeWidth={2} />
+                ? <ChevronLeft size={20} color={colors.ink} strokeWidth={2} />
+                : <ChevronRight size={20} color={colors.ink} strokeWidth={2} />
             }
           />
 
@@ -296,8 +317,8 @@ export const AddExpenseScreen = ({ navigation }: AddExpenseScreenProps) => {
   );
 };
 
-const s = StyleSheet.create({
-  root: { flex: 1, backgroundColor: C.canvas },
+const make_s = (colors: ThemeColors) => StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.canvas },
   flex: { flex: 1 },
 
   topBar: {
@@ -306,64 +327,64 @@ const s = StyleSheet.create({
   },
   backBtn: {
     width: 38, height: 38, borderRadius: 10,
-    backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border,
+    backgroundColor: colors.cardBg, borderWidth: 1, borderColor: colors.border,
     alignItems: 'center', justifyContent: 'center',
   },
   saveBtn: {
-    backgroundColor: C.accent, borderRadius: 10,
+    backgroundColor: colors.accent, borderRadius: 10,
     paddingHorizontal: 18, paddingVertical: 10,
   },
   saveBtnDisabled: { opacity: 0.4 },
   saveBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
 
   scroll: { paddingHorizontal: 20, paddingTop: 8, gap: 16 },
-  title: { fontSize: 30, fontWeight: '800', color: C.ink, letterSpacing: -1 },
+  title: { fontSize: 30, fontWeight: '800', color: colors.ink, letterSpacing: -1 },
 
   amountCard: {
-    backgroundColor: C.inputBg, borderRadius: 16,
-    borderWidth: 1.5, borderColor: C.border,
+    backgroundColor: colors.inputBg, borderRadius: 16,
+    borderWidth: 1.5, borderColor: colors.border,
     paddingVertical: 20, alignItems: 'center', gap: 8,
   },
-  amountLabel: { fontSize: 10, fontWeight: '700', color: C.muted, letterSpacing: 0.8 },
+  amountLabel: { fontSize: 10, fontWeight: '700', color: colors.muted, letterSpacing: 0.8 },
   amountInput: {
-    fontSize: 48, fontWeight: '800', color: C.ink,
+    fontSize: 48, fontWeight: '800', color: colors.ink,
     letterSpacing: -2, width: '100%', textAlign: 'center', padding: 0,
   },
 
   section: { gap: 10 },
-  sectionLabel: { fontSize: 11, fontWeight: '700', color: C.muted, letterSpacing: 0.8 },
+  sectionLabel: { fontSize: 11, fontWeight: '700', color: colors.muted, letterSpacing: 0.8 },
   catGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   catCard: {
     width: '30%', flexGrow: 1,
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: C.inputBg, borderRadius: 12,
-    borderWidth: 1.5, borderColor: C.border,
+    backgroundColor: colors.inputBg, borderRadius: 12,
+    borderWidth: 1.5, borderColor: colors.border,
     paddingHorizontal: 10, paddingVertical: 10,
   },
   catIcon: { width: 30, height: 30, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  catLabel: { fontSize: 12, fontWeight: '600', color: C.muted },
+  catLabel: { fontSize: 12, fontWeight: '600', color: colors.muted },
 
   card: {
-    backgroundColor: C.inputBg, borderRadius: 14,
-    borderWidth: 1.5, borderColor: C.border,
+    backgroundColor: colors.inputBg, borderRadius: 14,
+    borderWidth: 1.5, borderColor: colors.border,
     paddingHorizontal: 16, paddingVertical: 2,
   },
   fieldRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, gap: 12 },
-  fieldLabel: { width: 90, fontSize: 14, color: C.muted, fontWeight: '500' },
-  fieldInput: { flex: 1, fontSize: 14, color: C.ink, fontWeight: '500', padding: 0, textAlign: 'right' },
-  divider: { height: 1, backgroundColor: C.border },
+  fieldLabel: { width: 90, fontSize: 14, color: colors.muted, fontWeight: '500' },
+  fieldInput: { flex: 1, fontSize: 14, color: colors.ink, fontWeight: '500', padding: 0, textAlign: 'right' },
+  divider: { height: 1, backgroundColor: colors.border },
   dateValue: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 },
-  dateText: { fontSize: 14, fontWeight: '600', color: C.ink },
+  dateText: { fontSize: 14, fontWeight: '600', color: colors.ink },
 
   noteCard: {
-    backgroundColor: C.inputBg, borderRadius: 14,
-    borderWidth: 1.5, borderColor: C.border, padding: 14,
+    backgroundColor: colors.inputBg, borderRadius: 14,
+    borderWidth: 1.5, borderColor: colors.border, padding: 14,
   },
-  noteInput: { fontSize: 14, color: C.ink, minHeight: 72, padding: 0 },
+  noteInput: { fontSize: 14, color: colors.ink, minHeight: 72, padding: 0 },
 
   footer: { paddingHorizontal: 20, paddingBottom: 16, paddingTop: 8 },
   primaryBtn: {
-    backgroundColor: C.accent, borderRadius: 14,
+    backgroundColor: colors.accent, borderRadius: 14,
     paddingVertical: 17, alignItems: 'center',
   },
   primaryBtnDisabled: { opacity: 0.4 },
@@ -374,17 +395,17 @@ const s = StyleSheet.create({
     flex: 1, backgroundColor: 'rgba(0,0,0,0.45)',
   },
   sheet: {
-    backgroundColor: C.canvas,
+    backgroundColor: colors.canvas,
     borderTopLeftRadius: 24, borderTopRightRadius: 24,
     paddingBottom: Platform.OS === 'ios' ? 34 : 20,
     paddingTop: 12,
   },
   handle: {
     width: 36, height: 4, borderRadius: 2,
-    backgroundColor: C.border, alignSelf: 'center', marginBottom: 16,
+    backgroundColor: colors.border, alignSelf: 'center', marginBottom: 16,
   },
   sheetTitle: {
-    fontSize: 17, fontWeight: '800', color: C.ink,
+    fontSize: 17, fontWeight: '800', color: colors.ink,
     letterSpacing: -0.5, textAlign: 'center', marginBottom: 4,
   },
   sheetFooter: {
@@ -393,12 +414,12 @@ const s = StyleSheet.create({
   },
   cancelBtn: {
     flex: 1, paddingVertical: 15, borderRadius: 14,
-    borderWidth: 1.5, borderColor: C.border, alignItems: 'center',
+    borderWidth: 1.5, borderColor: colors.border, alignItems: 'center',
   },
-  cancelText: { fontSize: 15, fontWeight: '600', color: C.muted },
+  cancelText: { fontSize: 15, fontWeight: '600', color: colors.muted },
   confirmBtn: {
     flex: 1, paddingVertical: 15, borderRadius: 14,
-    backgroundColor: C.ink, alignItems: 'center',
+    backgroundColor: colors.ink, alignItems: 'center',
   },
   confirmText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 });

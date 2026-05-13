@@ -6,6 +6,7 @@ export interface CartItem {
   price: number;
   qty: number;
   color: string;
+  imageUrl?: string;
 }
 
 export type DiscountType = 'percent' | 'fixed';

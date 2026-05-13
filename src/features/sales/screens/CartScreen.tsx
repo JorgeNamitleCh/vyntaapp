@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
-  View, TouchableOpacity, ScrollView,
+  View, TouchableOpacity, ScrollView, Image,
   StyleSheet, SafeAreaView, StatusBar, Modal,
   TextInput, KeyboardAvoidingView, Platform,
 } from 'react-native';
@@ -10,16 +10,7 @@ import {
 } from 'lucide-react-native';
 import { CartScreenProps } from '../../../navigation/types';
 import { useCartStore, CartItem } from '../../../store/cartStore';
-
-const C = {
-  canvas: '#F4F2EC',
-  ink: '#0E1614',
-  accent: '#0E5C3F',
-  muted: '#6B7280',
-  border: '#E5E3DC',
-  white: '#FFFFFF',
-  danger: '#DC2626',
-};
+import { useThemeColors, ThemeColors } from '../../../theme/ThemeContext';
 
 // ── Mock clients ─────────────────────────────────────────────
 const CLIENTS = [
@@ -35,50 +26,58 @@ const Sheet = ({
   visible, onClose, title, children,
 }: {
   visible: boolean; onClose: () => void; title: string; children: React.ReactNode;
-}) => (
-  <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-    <TouchableOpacity style={sh.overlay} activeOpacity={1} onPress={onClose} />
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={sh.sheet}>
-        <View style={sh.handle} />
-        <View style={sh.sheetTop}>
-          <Text style={sh.sheetTitle}>{title}</Text>
-          <TouchableOpacity style={sh.closeBtn} onPress={onClose} activeOpacity={0.7}>
-            <X size={18} color={C.muted} strokeWidth={2} />
-          </TouchableOpacity>
+}) => {
+  const colors = useThemeColors();
+  const sh = useMemo(() => make_sh(colors), [colors]);
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <TouchableOpacity style={sh.overlay} activeOpacity={1} onPress={onClose} />
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <View style={sh.sheet}>
+          <View style={sh.handle} />
+          <View style={sh.sheetTop}>
+            <Text style={sh.sheetTitle}>{title}</Text>
+            <TouchableOpacity style={sh.closeBtn} onPress={onClose} activeOpacity={0.7}>
+              <X size={18} color={colors.muted} strokeWidth={2} />
+            </TouchableOpacity>
+          </View>
+          {children}
         </View>
-        {children}
-      </View>
-    </KeyboardAvoidingView>
-  </Modal>
-);
+      </KeyboardAvoidingView>
+    </Modal>
+  );
+};
 
-const sh = StyleSheet.create({
+const make_sh = (colors: ThemeColors) => StyleSheet.create({
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
   sheet: {
-    backgroundColor: C.canvas,
+    backgroundColor: colors.canvas,
     borderTopLeftRadius: 24, borderTopRightRadius: 24,
     paddingBottom: Platform.OS === 'ios' ? 34 : 20,
     paddingTop: 12,
   },
   handle: {
     width: 36, height: 4, borderRadius: 2,
-    backgroundColor: C.border, alignSelf: 'center', marginBottom: 14,
+    backgroundColor: colors.border, alignSelf: 'center', marginBottom: 14,
   },
   sheetTop: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, marginBottom: 16,
   },
-  sheetTitle: { fontSize: 18, fontWeight: '800', color: C.ink, letterSpacing: -0.5 },
+  sheetTitle: { fontSize: 18, fontWeight: '800', color: colors.ink, letterSpacing: -0.5 },
   closeBtn: {
     width: 32, height: 32, borderRadius: 16,
-    backgroundColor: C.white, borderWidth: 1, borderColor: C.border,
+    backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border,
     alignItems: 'center', justifyContent: 'center',
   },
 });
 
 // ── Main screen ───────────────────────────────────────────────
 export const CartScreen = ({ navigation }: CartScreenProps) => {
+  const colors = useThemeColors();
+  const s = useMemo(() => make_s(colors), [colors]);
+  const m = useMemo(() => make_m(colors), [colors]);
+
   const {
     items, increment, decrement, clear,
     note: cartNote, setNote: setCartNote,
@@ -104,8 +103,9 @@ export const CartScreen = ({ navigation }: CartScreenProps) => {
   })();
 
   const afterDiscount = subtotal - discountAmt;
-  const iva   = Math.round(afterDiscount * 0.16 * 100) / 100;
-  const total = afterDiscount + iva;
+  const total    = Math.round(afterDiscount * 100) / 100;
+  const ivaAmt   = Math.round((total * 16 / 116) * 100) / 100;
+  const baseAmt  = total - ivaAmt;
 
   const filteredClients = CLIENTS.filter(c =>
     c.name.toLowerCase().includes(clientSearch.toLowerCase()) ||
@@ -114,12 +114,12 @@ export const CartScreen = ({ navigation }: CartScreenProps) => {
 
   return (
     <SafeAreaView style={s.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={C.canvas} />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.canvas} />
 
       {/* ── Top bar ── */}
       <View style={s.topBar}>
         <TouchableOpacity style={s.backBtn} onPress={() => navigation.goBack()} activeOpacity={0.7}>
-          <ChevronLeft size={20} color={C.ink} strokeWidth={2} />
+          <ChevronLeft size={20} color={colors.ink} strokeWidth={2} />
         </TouchableOpacity>
         <TouchableOpacity onPress={clear} activeOpacity={0.7}>
           <Text style={s.clearText}>Vaciar</Text>
@@ -147,7 +147,10 @@ export const CartScreen = ({ navigation }: CartScreenProps) => {
                   {index > 0 && <View style={s.divider} />}
                   <View style={s.itemRow}>
                     <View style={[s.avatar, { backgroundColor: item.color }]}>
-                      <Text style={s.avatarText}>{item.name.charAt(0).toUpperCase()}</Text>
+                      {item.imageUrl
+                        ? <Image source={{ uri: item.imageUrl }} style={s.avatarImg} />
+                        : <Text style={s.avatarText}>{item.name.charAt(0).toUpperCase()}</Text>
+                      }
                     </View>
                     <View style={s.itemInfo}>
                       <Text style={s.itemName} numberOfLines={1}>{item.name}</Text>
@@ -157,7 +160,7 @@ export const CartScreen = ({ navigation }: CartScreenProps) => {
                       <TouchableOpacity
                         style={s.qtyMinus} onPress={() => decrement(item.id)} activeOpacity={0.6}
                         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                        <Minus size={13} color={C.ink} strokeWidth={2.5} />
+                        <Minus size={13} color={colors.ink} strokeWidth={2.5} />
                       </TouchableOpacity>
                       <Text style={s.qtyNum}>{item.qty}</Text>
                       <TouchableOpacity
@@ -199,7 +202,7 @@ export const CartScreen = ({ navigation }: CartScreenProps) => {
                   style={[s.chip, active && s.chipActive]}
                   onPress={onPress}
                   activeOpacity={0.75}>
-                  <Icon size={14} color={active ? C.accent : C.ink} strokeWidth={1.75} />
+                  <Icon size={14} color={active ? colors.accent : colors.ink} strokeWidth={1.75} />
                   <Text style={[s.chipText, active && s.chipTextActive]} numberOfLines={1}>
                     {label}
                   </Text>
@@ -212,15 +215,15 @@ export const CartScreen = ({ navigation }: CartScreenProps) => {
               <View style={s.summaryRow}>
                 <Text style={s.summaryLabel}>Subtotal</Text>
                 <Text style={s.summaryVal}>
-                  ${subtotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                  ${baseAmt.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                 </Text>
               </View>
               {discountAmt > 0 && (
                 <View style={s.summaryRow}>
-                  <Text style={[s.summaryLabel, { color: C.accent }]}>
+                  <Text style={[s.summaryLabel, { color: colors.accent }]}>
                     Descuento {cartDiscount?.type === 'percent' ? `(${cartDiscount.value}%)` : ''}
                   </Text>
-                  <Text style={[s.summaryVal, { color: C.accent }]}>
+                  <Text style={[s.summaryVal, { color: colors.accent }]}>
                     −${discountAmt.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                   </Text>
                 </View>
@@ -228,7 +231,7 @@ export const CartScreen = ({ navigation }: CartScreenProps) => {
               <View style={s.summaryRow}>
                 <Text style={s.summaryLabel}>IVA 16%</Text>
                 <Text style={s.summaryVal}>
-                  ${iva.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                  ${ivaAmt.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                 </Text>
               </View>
               <View style={s.totalRow}>
@@ -312,7 +315,7 @@ export const CartScreen = ({ navigation }: CartScreenProps) => {
             value={noteInput}
             onChangeText={setNoteInput}
             placeholder="Escribe una nota para esta venta..."
-            placeholderTextColor={C.muted}
+            placeholderTextColor={colors.muted}
             multiline
             numberOfLines={4}
             textAlignVertical="top"
@@ -336,7 +339,7 @@ export const CartScreen = ({ navigation }: CartScreenProps) => {
               value={clientSearch}
               onChangeText={setClientSearch}
               placeholder="Buscar cliente..."
-              placeholderTextColor={C.muted}
+              placeholderTextColor={colors.muted}
               autoFocus
             />
           </View>
@@ -355,7 +358,7 @@ export const CartScreen = ({ navigation }: CartScreenProps) => {
                   <Text style={m.clientPhone}>{c.phone}</Text>
                 </View>
                 {client?.id === c.id && (
-                  <Check size={18} color={C.accent} strokeWidth={2.5} />
+                  <Check size={18} color={colors.accent} strokeWidth={2.5} />
                 )}
               </TouchableOpacity>
             ))}
@@ -367,8 +370,8 @@ export const CartScreen = ({ navigation }: CartScreenProps) => {
 };
 
 /* ─── Styles ──────────────────────────────────────────────── */
-const s = StyleSheet.create({
-  root: { flex: 1, backgroundColor: C.canvas },
+const make_s = (colors: ThemeColors) => StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.canvas },
 
   topBar: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
@@ -376,152 +379,153 @@ const s = StyleSheet.create({
   },
   backBtn: {
     width: 36, height: 36, borderRadius: 18,
-    backgroundColor: C.white, borderWidth: 1, borderColor: C.border,
+    backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border,
     alignItems: 'center', justifyContent: 'center',
   },
-  clearText: { fontSize: 15, fontWeight: '600', color: C.danger },
+  clearText: { fontSize: 15, fontWeight: '600', color: colors.danger },
 
   title: {
-    fontSize: 32, fontWeight: '800', color: C.ink, letterSpacing: -1,
+    fontSize: 32, fontWeight: '800', color: colors.ink, letterSpacing: -1,
     paddingHorizontal: 20, paddingBottom: 14,
   },
 
   scroll: { paddingHorizontal: 20 },
 
   itemsCard: {
-    backgroundColor: C.white, borderRadius: 16,
-    borderWidth: 1.5, borderColor: C.border,
+    backgroundColor: colors.white, borderRadius: 16,
+    borderWidth: 1.5, borderColor: colors.border,
     paddingHorizontal: 14, overflow: 'hidden',
   },
-  divider: { height: 1, backgroundColor: C.border },
+  divider: { height: 1, backgroundColor: colors.border },
   itemRow: {
     flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14,
   },
   avatar: {
     width: 44, height: 44, borderRadius: 12,
-    alignItems: 'center', justifyContent: 'center',
+    alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
   },
+  avatarImg:  { width: 44, height: 44, borderRadius: 12 },
   avatarText: { fontSize: 18, fontWeight: '800', color: 'rgba(255,255,255,0.7)' },
   itemInfo: { flex: 1, gap: 3 },
-  itemName: { fontSize: 15, fontWeight: '700', color: C.ink },
-  itemUnit: { fontSize: 13, color: C.muted },
+  itemName: { fontSize: 15, fontWeight: '700', color: colors.ink },
+  itemUnit: { fontSize: 13, color: colors.muted },
 
   qtyPill: {
     flexDirection: 'row', alignItems: 'center',
-    borderWidth: 1.5, borderColor: C.border,
-    borderRadius: 22, backgroundColor: C.white,
+    borderWidth: 1.5, borderColor: colors.border,
+    borderRadius: 22, backgroundColor: colors.white,
     paddingLeft: 10, paddingRight: 4, paddingVertical: 4, gap: 8,
   },
   qtyMinus: { padding: 2 },
-  qtyNum: { fontSize: 15, fontWeight: '700', color: C.ink, minWidth: 16, textAlign: 'center' },
+  qtyNum: { fontSize: 15, fontWeight: '700', color: colors.ink, minWidth: 16, textAlign: 'center' },
   qtyPlus: {
     width: 28, height: 28, borderRadius: 14,
-    backgroundColor: C.ink, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center',
   },
 
   chips: { flexDirection: 'row', gap: 8, marginTop: 14, marginBottom: 14 },
   chip: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
-    backgroundColor: C.white, borderRadius: 10,
-    borderWidth: 1.5, borderColor: C.border,
+    backgroundColor: colors.white, borderRadius: 10,
+    borderWidth: 1.5, borderColor: colors.border,
     paddingVertical: 10, paddingHorizontal: 8,
   },
-  chipActive: { borderColor: C.accent, backgroundColor: '#F0FDF4' },
-  chipText: { fontSize: 13, fontWeight: '600', color: C.ink },
-  chipTextActive: { color: C.accent },
+  chipActive: { borderColor: colors.accent, backgroundColor: '#F0FDF4' },
+  chipText: { fontSize: 13, fontWeight: '600', color: colors.ink },
+  chipTextActive: { color: colors.accent },
 
   summaryCard: {
-    backgroundColor: C.white, borderRadius: 16,
-    borderWidth: 1.5, borderColor: C.border,
+    backgroundColor: colors.white, borderRadius: 16,
+    borderWidth: 1.5, borderColor: colors.border,
     paddingHorizontal: 16, paddingTop: 4,
   },
   summaryRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingVertical: 11,
   },
-  summaryLabel: { fontSize: 14, color: C.muted },
-  summaryVal: { fontSize: 14, fontWeight: '600', color: C.ink },
+  summaryLabel: { fontSize: 14, color: colors.muted },
+  summaryVal: { fontSize: 14, fontWeight: '600', color: colors.ink },
   totalRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    borderTopWidth: 1, borderTopColor: C.border,
+    borderTopWidth: 1, borderTopColor: colors.border,
     paddingTop: 12, paddingBottom: 14, marginTop: 2,
   },
-  totalLabel: { fontSize: 11, fontWeight: '700', color: C.muted, letterSpacing: 1 },
-  totalVal: { fontSize: 28, fontWeight: '800', color: C.ink, letterSpacing: -1 },
+  totalLabel: { fontSize: 11, fontWeight: '700', color: colors.muted, letterSpacing: 1 },
+  totalVal: { fontSize: 28, fontWeight: '800', color: colors.ink, letterSpacing: -1 },
 
   footer: { paddingHorizontal: 20, paddingBottom: 20, paddingTop: 8 },
   payBtn: {
-    backgroundColor: C.accent, borderRadius: 16,
+    backgroundColor: colors.accent, borderRadius: 16,
     paddingVertical: 17, alignItems: 'center',
   },
   payBtnText: { fontSize: 17, fontWeight: '700', color: '#fff', letterSpacing: -0.3 },
 
   empty: { alignItems: 'center', paddingTop: 80, gap: 12 },
   emptyIcon: { fontSize: 48 },
-  emptyText: { fontSize: 16, color: C.muted, fontWeight: '500' },
+  emptyText: { fontSize: 16, color: colors.muted, fontWeight: '500' },
 });
 
-const m = StyleSheet.create({
+const make_m = (colors: ThemeColors) => StyleSheet.create({
   body: { paddingHorizontal: 20, gap: 14 },
 
   toggle: {
     flexDirection: 'row',
-    backgroundColor: C.white, borderRadius: 12,
-    borderWidth: 1.5, borderColor: C.border,
+    backgroundColor: colors.white, borderRadius: 12,
+    borderWidth: 1.5, borderColor: colors.border,
     padding: 4, gap: 4,
   },
   toggleBtn: {
     flex: 1, paddingVertical: 9, borderRadius: 9,
     alignItems: 'center',
   },
-  toggleBtnActive: { backgroundColor: C.ink },
-  toggleText: { fontSize: 14, fontWeight: '600', color: C.muted },
+  toggleBtnActive: { backgroundColor: colors.ink },
+  toggleText: { fontSize: 14, fontWeight: '600', color: colors.muted },
   toggleTextActive: { color: '#fff' },
 
   inputRow: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: C.white, borderRadius: 14,
-    borderWidth: 1.5, borderColor: C.border,
+    backgroundColor: colors.white, borderRadius: 14,
+    borderWidth: 1.5, borderColor: colors.border,
     paddingHorizontal: 16, height: 60,
   },
-  inputPrefix: { fontSize: 28, fontWeight: '700', color: C.muted, marginRight: 8 },
-  input: { flex: 1, fontSize: 36, fontWeight: '800', color: C.ink, padding: 0 },
+  inputPrefix: { fontSize: 28, fontWeight: '700', color: colors.muted, marginRight: 8 },
+  input: { flex: 1, fontSize: 36, fontWeight: '800', color: colors.ink, padding: 0 },
 
-  discountPreview: { fontSize: 14, color: C.accent, fontWeight: '600', textAlign: 'center' },
+  discountPreview: { fontSize: 14, color: colors.accent, fontWeight: '600', textAlign: 'center' },
 
   confirmBtn: {
-    backgroundColor: C.ink, borderRadius: 14,
+    backgroundColor: colors.ink, borderRadius: 14,
     paddingVertical: 16, alignItems: 'center', marginTop: 4,
   },
   confirmText: { fontSize: 16, fontWeight: '700', color: '#fff' },
 
   noteInput: {
-    backgroundColor: C.white, borderRadius: 14,
-    borderWidth: 1.5, borderColor: C.border,
-    padding: 14, fontSize: 15, color: C.ink,
+    backgroundColor: colors.white, borderRadius: 14,
+    borderWidth: 1.5, borderColor: colors.border,
+    padding: 14, fontSize: 15, color: colors.ink,
     minHeight: 110, textAlignVertical: 'top',
   },
 
   searchBox: {
-    backgroundColor: C.white, borderRadius: 12,
-    borderWidth: 1.5, borderColor: C.border,
+    backgroundColor: colors.white, borderRadius: 12,
+    borderWidth: 1.5, borderColor: colors.border,
     paddingHorizontal: 14, height: 44, justifyContent: 'center',
   },
-  searchInput: { fontSize: 15, color: C.ink, padding: 0 },
+  searchInput: { fontSize: 15, color: colors.ink, padding: 0 },
 
   clientList: { gap: 0 },
   clientRow: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     paddingVertical: 12, paddingHorizontal: 4,
-    borderBottomWidth: 1, borderBottomColor: C.border,
+    borderBottomWidth: 1, borderBottomColor: colors.border,
   },
   clientRowActive: { backgroundColor: '#F0FDF4', borderRadius: 10 },
   clientAvatar: {
     width: 40, height: 40, borderRadius: 20,
-    backgroundColor: C.ink, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center',
   },
   clientAvatarText: { fontSize: 16, fontWeight: '700', color: '#fff' },
   clientInfo: { flex: 1 },
-  clientName: { fontSize: 15, fontWeight: '600', color: C.ink },
-  clientPhone: { fontSize: 13, color: C.muted },
+  clientName: { fontSize: 15, fontWeight: '600', color: colors.ink },
+  clientPhone: { fontSize: 13, color: colors.muted },
 });

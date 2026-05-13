@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View, TouchableOpacity, FlatList, Modal,
   TextInput, StyleSheet, SafeAreaView, StatusBar,
@@ -7,13 +7,9 @@ import { Text } from '../../../components/Text';
 import { ChevronLeft, Plus, Trash2, X } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../../navigation/types';
+import { useThemeColors, ThemeColors } from '../../../theme/ThemeContext';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'Employees'>;
-
-const C = {
-  canvas: '#F4F2EC', ink: '#0E1614', accent: '#0E5C3F',
-  muted: '#6B7280', border: '#E5E3DC', white: '#FFFFFF',
-};
 
 type EmployeeRole = 'Admin' | 'Cashier' | 'Inventory';
 
@@ -39,6 +35,8 @@ const MOCK_EMPLOYEES: Employee[] = [
 const ROLES: EmployeeRole[] = ['Admin', 'Cashier', 'Inventory'];
 
 const EmployeeRow = ({ employee, onDelete }: { employee: Employee; onDelete: () => void }) => {
+  const colors = useThemeColors();
+  const card = useMemo(() => make_card(colors), [colors]);
   const initials   = employee.name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
   const roleColors = ROLE_COLORS[employee.role];
   return (
@@ -52,24 +50,29 @@ const EmployeeRow = ({ employee, onDelete }: { employee: Employee; onDelete: () 
         <Text style={[card.badgeText, { color: roleColors.text }]}>{ROLE_LABELS[employee.role]}</Text>
       </View>
       <TouchableOpacity onPress={onDelete} hitSlop={12} activeOpacity={0.7}>
-        <Trash2 size={16} color={C.muted} strokeWidth={1.75} />
+        <Trash2 size={16} color={colors.muted} strokeWidth={1.75} />
       </TouchableOpacity>
     </View>
   );
 };
 
-const card = StyleSheet.create({
+const make_card = (colors: ThemeColors) => StyleSheet.create({
   wrap:       { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14 },
-  avatar:     { width: 40, height: 40, borderRadius: 20, backgroundColor: C.ink, alignItems: 'center', justifyContent: 'center' },
+  avatar:     { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' },
   avatarText: { color: '#fff', fontSize: 14, fontWeight: '800' },
   info:       { flex: 1, gap: 2 },
-  name:       { fontSize: 14, fontWeight: '700', color: C.ink },
-  phone:      { fontSize: 12, color: C.muted },
+  name:       { fontSize: 14, fontWeight: '700', color: colors.ink },
+  phone:      { fontSize: 12, color: colors.muted },
   badge:      { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
   badgeText:  { fontSize: 11, fontWeight: '700' },
 });
 
 export const EmployeesScreen = ({ navigation }: Props) => {
+  const colors = useThemeColors();
+  const card = useMemo(() => make_card(colors), [colors]);
+  const s = useMemo(() => make_s(colors), [colors]);
+  const modal = useMemo(() => make_modal(colors), [colors]);
+
   const [employees, setEmployees] = useState<Employee[]>(MOCK_EMPLOYEES);
   const [modalVisible, setModalVisible] = useState(false);
   const [newName, setNewName]   = useState('');
@@ -91,10 +94,10 @@ export const EmployeesScreen = ({ navigation }: Props) => {
 
   return (
     <SafeAreaView style={s.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={C.canvas} />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.canvas} />
       <View style={s.header}>
         <TouchableOpacity style={s.backBtn} onPress={() => navigation.goBack()} activeOpacity={0.7}>
-          <ChevronLeft size={20} color={C.ink} strokeWidth={2} />
+          <ChevronLeft size={20} color={colors.ink} strokeWidth={2} />
         </TouchableOpacity>
         <View style={s.headerText}>
           <Text style={s.title}>Empleados</Text>
@@ -115,7 +118,7 @@ export const EmployeesScreen = ({ navigation }: Props) => {
         )}
         ListFooterComponent={
           <TouchableOpacity style={s.inviteRow} onPress={() => setModalVisible(true)} activeOpacity={0.8}>
-            <Plus size={16} color={C.accent} strokeWidth={2.5} />
+            <Plus size={16} color={colors.accent} strokeWidth={2.5} />
             <Text style={s.inviteText}>Invitar empleado</Text>
           </TouchableOpacity>
         }
@@ -129,16 +132,16 @@ export const EmployeesScreen = ({ navigation }: Props) => {
               <View style={modal.header}>
                 <Text style={modal.title}>Invitar empleado</Text>
                 <TouchableOpacity onPress={() => setModalVisible(false)}>
-                  <X size={20} color={C.ink} strokeWidth={2} />
+                  <X size={20} color={colors.ink} strokeWidth={2} />
                 </TouchableOpacity>
               </View>
               <View style={modal.field}>
                 <Text style={modal.fieldLabel}>Nombre completo</Text>
-                <TextInput style={modal.input} value={newName} onChangeText={setNewName} placeholder="Ej. Ana García" placeholderTextColor={C.muted} />
+                <TextInput style={modal.input} value={newName} onChangeText={setNewName} placeholder="Ej. Ana García" placeholderTextColor={colors.muted} />
               </View>
               <View style={modal.field}>
                 <Text style={modal.fieldLabel}>Teléfono (WhatsApp)</Text>
-                <TextInput style={modal.input} value={newPhone} onChangeText={setNewPhone} placeholder="+52 55 0000 0000" placeholderTextColor={C.muted} keyboardType="phone-pad" />
+                <TextInput style={modal.input} value={newPhone} onChangeText={setNewPhone} placeholder="+52 55 0000 0000" placeholderTextColor={colors.muted} keyboardType="phone-pad" />
               </View>
               <View style={modal.field}>
                 <Text style={modal.fieldLabel}>Rol</Text>
@@ -167,35 +170,35 @@ export const EmployeesScreen = ({ navigation }: Props) => {
   );
 };
 
-const s = StyleSheet.create({
-  root:       { flex: 1, backgroundColor: C.canvas },
+const make_s = (colors: ThemeColors) => StyleSheet.create({
+  root:       { flex: 1, backgroundColor: colors.canvas },
   header:     { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 20, paddingTop: 8, paddingBottom: 8 },
-  backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: C.white, borderWidth: 1, borderColor: C.border, alignItems: 'center', justifyContent: 'center' },
+  backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' },
   headerText: { flex: 1, gap: 1 },
-  title:      { fontSize: 20, fontWeight: '800', color: C.ink, letterSpacing: -0.5 },
-  subtitle:   { fontSize: 12, color: C.muted },
-  addBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: C.accent, alignItems: 'center', justifyContent: 'center' },
+  title:      { fontSize: 20, fontWeight: '800', color: colors.ink, letterSpacing: -0.5 },
+  subtitle:   { fontSize: 12, color: colors.muted },
+  addBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' },
   list:       { paddingHorizontal: 20, paddingVertical: 8 },
-  separator:  { height: 1, backgroundColor: C.border },
+  separator:  { height: 1, backgroundColor: colors.border },
   inviteRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, justifyContent: 'center', paddingVertical: 16, marginTop: 4 },
-  inviteText: { fontSize: 14, fontWeight: '700', color: C.accent },
+  inviteText: { fontSize: 14, fontWeight: '700', color: colors.accent },
 });
 
-const modal = StyleSheet.create({
+const make_modal = (colors: ThemeColors) => StyleSheet.create({
   overlay:           { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
-  sheetSafe:         { backgroundColor: C.white, borderTopLeftRadius: 24, borderTopRightRadius: 24 },
+  sheetSafe:         { backgroundColor: colors.white, borderTopLeftRadius: 24, borderTopRightRadius: 24 },
   sheet:             { paddingHorizontal: 24, paddingBottom: 24 },
-  handle:            { width: 36, height: 4, borderRadius: 2, backgroundColor: C.border, alignSelf: 'center', marginTop: 12, marginBottom: 20 },
+  handle:            { width: 36, height: 4, borderRadius: 2, backgroundColor: colors.border, alignSelf: 'center', marginTop: 12, marginBottom: 20 },
   header:            { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
-  title:             { fontSize: 18, fontWeight: '800', color: C.ink },
+  title:             { fontSize: 18, fontWeight: '800', color: colors.ink },
   field:             { gap: 8, marginBottom: 20 },
-  fieldLabel:        { fontSize: 12, fontWeight: '700', color: C.muted, letterSpacing: 0.5 },
-  input:             { backgroundColor: C.canvas, borderRadius: 12, borderWidth: 1.5, borderColor: C.border, paddingHorizontal: 14, paddingVertical: 13, fontSize: 15, color: C.ink },
+  fieldLabel:        { fontSize: 12, fontWeight: '700', color: colors.muted, letterSpacing: 0.5 },
+  input:             { backgroundColor: colors.canvas, borderRadius: 12, borderWidth: 1.5, borderColor: colors.border, paddingHorizontal: 14, paddingVertical: 13, fontSize: 15, color: colors.ink },
   roleRow:           { flexDirection: 'row', gap: 8 },
-  roleChip:          { flex: 1, paddingVertical: 10, borderRadius: 10, borderWidth: 1.5, borderColor: C.border, alignItems: 'center', backgroundColor: C.canvas },
-  roleChipActive:    { backgroundColor: C.ink, borderColor: C.ink },
-  roleChipText:      { fontSize: 13, fontWeight: '600', color: C.muted },
+  roleChip:          { flex: 1, paddingVertical: 10, borderRadius: 10, borderWidth: 1.5, borderColor: colors.border, alignItems: 'center', backgroundColor: colors.canvas },
+  roleChipActive:    { backgroundColor: colors.ink, borderColor: colors.ink },
+  roleChipText:      { fontSize: 13, fontWeight: '600', color: colors.muted },
   roleChipTextActive:{ color: '#fff' },
-  submitBtn:         { backgroundColor: C.accent, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 4 },
+  submitBtn:         { backgroundColor: colors.accent, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 4 },
   submitText:        { fontSize: 16, fontWeight: '700', color: '#fff' },
 });

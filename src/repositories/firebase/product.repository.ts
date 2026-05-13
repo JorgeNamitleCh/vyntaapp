@@ -31,6 +31,9 @@ const col = (tenantId: string) =>
     .doc(tenantId)
     .collection(TENANT_COLLECTIONS.PRODUCTS);
 
+const clean = (obj: Record<string, any>): Record<string, any> =>
+  Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined));
+
 export const firebaseProductRepository: IProductRepository = {
   subscribe(tenantId, callback) {
     return col(tenantId)
@@ -53,13 +56,13 @@ export const firebaseProductRepository: IProductRepository = {
   async create(tenantId, data) {
     const ref = col(tenantId).doc();
     const now = firestore.FieldValue.serverTimestamp();
-    await ref.set({ ...data, active: true, createdAt: now, updatedAt: now });
+    await ref.set({ ...clean(data as any), active: true, createdAt: now, updatedAt: now });
     return { id: ref.id, ...data, active: true, createdAt: new Date(), updatedAt: new Date() };
   },
 
   async update(tenantId, id, data) {
     await col(tenantId).doc(id).update({
-      ...data,
+      ...clean(data as any),
       updatedAt: firestore.FieldValue.serverTimestamp(),
     });
   },

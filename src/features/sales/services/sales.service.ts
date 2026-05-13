@@ -52,6 +52,10 @@ export const salesService = {
     };
   },
 
+  async getSaleById(tenantId: string, saleId: string): Promise<Sale | null> {
+    return repository.getById(tenantId, saleId);
+  },
+
   async deleteSale(tenantId: string, saleId: string): Promise<void> {
     return repository.delete(tenantId, saleId);
   },

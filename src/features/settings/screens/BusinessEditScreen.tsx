@@ -1,51 +1,148 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View, TouchableOpacity, ScrollView, TextInput,
-  StyleSheet, SafeAreaView, StatusBar,
+  StyleSheet, SafeAreaView, StatusBar, Image, ActivityIndicator,
 } from 'react-native';
 import { Text } from '../../../components/Text';
-import { ChevronLeft, ChevronDown } from 'lucide-react-native';
+import { AppButton } from '../../../components/AppButton';
+import { BackButton } from '../../../components/BackButton';
+import { Card } from '../../../components/Card';
+import { Divider } from '../../../components/Divider';
+import { SectionLabel } from '../../../components/SectionLabel';
+import { ChevronDown, Camera } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../../navigation/types';
 import { useAuthStore } from '../../../store/authStore';
+import { firebaseTenantRepository } from '../../../repositories/firebase/tenant.repository';
+import { storageService } from '../../../services/storage.service';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { toast } from '../../../store/toastStore';
+import { Radius } from '../../../theme';
+import { useThemeColors, ThemeColors } from '../../../theme/ThemeContext';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'BusinessEdit'>;
 
-const C = {
-  canvas: '#F4F2EC', ink: '#0E1614', accent: '#0E5C3F',
-  muted: '#6B7280', border: '#E5E3DC', white: '#FFFFFF',
-};
-
-const BUSINESS_TYPES = ['Café / Restaurante', 'Tienda de ropa', 'Salud y belleza', 'Abarrotes', 'Servicios', 'Otro'];
+const BUSINESS_TYPES = [
+  'Café / Restaurante', 'Tienda de ropa', 'Salud y belleza',
+  'Abarrotes', 'Servicios', 'Otro',
+];
 
 export const BusinessEditScreen = ({ navigation }: Props) => {
-  const { tenant } = useAuthStore();
-  const [name, setName]         = useState(tenant?.name ?? '');
-  const [type, setType]         = useState('Café / Restaurante');
+  const colors = useThemeColors();
+  const s = useMemo(() => makeStyles(colors), [colors]);
+
+  const { tenant, setTenant } = useAuthStore();
+
+  const [name,      setName]      = useState(tenant?.name ?? '');
+  const [type,      setType]      = useState(tenant?.businessType ?? BUSINESS_TYPES[0]);
   const [showTypes, setShowTypes] = useState(false);
+
+  const [logoUri,      setLogoUri]      = useState<string | null>(null);
+  const [existingLogo, setExistingLogo] = useState(tenant?.logoUrl ?? null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [saving,       setSaving]       = useState(false);
+
+  const displayLogo = logoUri ?? existingLogo;
+  const isValid = name.trim().length >= 2;
+
+  const pickLogo = async () => {
+    const result = await launchImageLibrary({ mediaType: 'photo', quality: 0.8 });
+    if (result.assets?.[0]?.uri) setLogoUri(result.assets[0].uri);
+  };
+
+  const removeLogo = () => { setLogoUri(null); setExistingLogo(null); };
+
+  const handleSave = async () => {
+    if (!isValid || saving || !tenant) return;
+    setSaving(true);
+    try {
+      let logoUrl = existingLogo ?? undefined;
+
+      if (logoUri) {
+        setUploadingLogo(true);
+        try {
+          logoUrl = await storageService.uploadLogoImage(tenant.id, logoUri);
+        } catch (e) {
+          console.warn('Logo upload failed', e);
+        } finally {
+          setUploadingLogo(false);
+        }
+      }
+
+      if (!logoUri && !existingLogo && tenant.logoUrl) {
+        storageService.deleteFile(tenant.logoUrl).catch(() => {});
+        logoUrl = undefined;
+      }
+
+      await firebaseTenantRepository.updateTenant(tenant.id, {
+        name: name.trim(),
+        businessType: type,
+        ...(logoUrl !== undefined ? { logoUrl } : { logoUrl: undefined }),
+      });
+
+      setTenant({ ...tenant, name: name.trim(), businessType: type, logoUrl });
+      toast.success('Cambios guardados');
+      navigation.goBack();
+    } catch (e) {
+      toast.error('Error', 'No se pudieron guardar los cambios');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <SafeAreaView style={s.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={C.canvas} />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.canvas} />
+
       <View style={s.header}>
-        <TouchableOpacity style={s.backBtn} onPress={() => navigation.goBack()} activeOpacity={0.7}>
-          <ChevronLeft size={20} color={C.ink} strokeWidth={2} />
-        </TouchableOpacity>
+        <BackButton onPress={() => navigation.goBack()} />
         <Text style={s.title}>Mi negocio</Text>
+        <TouchableOpacity
+          style={[s.saveTopBtn, (!isValid || saving) && { opacity: 0.4 }]}
+          onPress={handleSave}
+          disabled={!isValid || saving}>
+          {saving
+            ? <ActivityIndicator size="small" color="#fff" />
+            : <Text style={s.saveTopText}>Guardar</Text>}
+        </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-        <View style={s.avatarSection}>
-          <View style={s.avatar}>
-            <Text style={s.avatarText}>{name.charAt(0).toUpperCase() || '?'}</Text>
-          </View>
-          <TouchableOpacity activeOpacity={0.75}>
-            <Text style={s.changePhoto}>Cambiar logo</Text>
+      <ScrollView
+        contentContainerStyle={s.scroll}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled">
+
+        {/* Logo */}
+        <View style={s.logoSection}>
+          <TouchableOpacity style={s.logoWrap} onPress={pickLogo} activeOpacity={0.8}>
+            {displayLogo ? (
+              <Image source={{ uri: displayLogo }} style={s.logoImg} />
+            ) : (
+              <View style={s.logoPlaceholder}>
+                <Text style={s.logoInitial}>{name.charAt(0).toUpperCase() || '?'}</Text>
+              </View>
+            )}
+            <View style={s.cameraBadge}>
+              {uploadingLogo
+                ? <ActivityIndicator size="small" color="#fff" />
+                : <Camera size={14} color="#fff" strokeWidth={2} />}
+            </View>
           </TouchableOpacity>
+
+          <View style={s.logoActions}>
+            <TouchableOpacity onPress={pickLogo} activeOpacity={0.75}>
+              <Text style={s.changeLogoText}>{displayLogo ? 'Cambiar logo' : 'Agregar logo'}</Text>
+            </TouchableOpacity>
+            {displayLogo && (
+              <TouchableOpacity onPress={removeLogo} activeOpacity={0.75}>
+                <Text style={s.removeLogoText}>Quitar</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
 
-        <Text style={s.sectionLabel}>INFORMACIÓN BÁSICA</Text>
-        <View style={s.card}>
+        <SectionLabel>INFORMACIÓN BÁSICA</SectionLabel>
+        <Card>
           <View style={s.field}>
             <Text style={s.fieldLabel}>Nombre del negocio</Text>
             <TextInput
@@ -53,19 +150,22 @@ export const BusinessEditScreen = ({ navigation }: Props) => {
               value={name}
               onChangeText={setName}
               placeholder="Ej. Café Nami"
-              placeholderTextColor={C.muted}
+              placeholderTextColor={colors.muted}
             />
           </View>
-          <View style={s.sep} />
+          <Divider />
           <View style={s.field}>
             <Text style={s.fieldLabel}>Tipo de negocio</Text>
-            <TouchableOpacity style={s.selector} onPress={() => setShowTypes(!showTypes)} activeOpacity={0.75}>
+            <TouchableOpacity
+              style={s.selector}
+              onPress={() => setShowTypes(v => !v)}
+              activeOpacity={0.75}>
               <Text style={s.selectorValue}>{type}</Text>
-              <ChevronDown size={16} color={C.muted} strokeWidth={2} />
+              <ChevronDown size={16} color={colors.muted} strokeWidth={2} />
             </TouchableOpacity>
             {showTypes && (
               <View style={s.dropdown}>
-                {BUSINESS_TYPES.map((t) => (
+                {BUSINESS_TYPES.map(t => (
                   <TouchableOpacity
                     key={t}
                     style={[s.dropItem, t === type && s.dropItemActive]}
@@ -77,61 +177,80 @@ export const BusinessEditScreen = ({ navigation }: Props) => {
               </View>
             )}
           </View>
-        </View>
+        </Card>
 
-        <Text style={s.sectionLabel}>LOCALIZACIÓN</Text>
-        <View style={s.card}>
-          <View style={s.infoRow}>
-            <Text style={s.infoLabel}>País</Text>
-            <Text style={s.infoValue}>México</Text>
-          </View>
-          <View style={s.sep} />
-          <View style={s.infoRow}>
-            <Text style={s.infoLabel}>Moneda</Text>
-            <Text style={s.infoValue}>MXN · Peso mexicano</Text>
-          </View>
-          <View style={s.sep} />
-          <View style={s.infoRow}>
-            <Text style={s.infoLabel}>Zona horaria</Text>
-            <Text style={s.infoValue}>América/Mexico_City</Text>
-          </View>
-        </View>
+        <SectionLabel>LOCALIZACIÓN</SectionLabel>
+        <Card>
+          {[
+            { label: 'País',         value: 'México' },
+            { label: 'Moneda',       value: `${tenant?.currency ?? 'MXN'} · Peso mexicano` },
+            { label: 'Zona horaria', value: 'América/Mexico_City' },
+          ].map((row, i, arr) => (
+            <View key={row.label}>
+              <View style={s.infoRow}>
+                <Text style={s.infoLabel}>{row.label}</Text>
+                <Text style={s.infoValue}>{row.value}</Text>
+              </View>
+              {i < arr.length - 1 && <Divider />}
+            </View>
+          ))}
+        </Card>
 
-        <TouchableOpacity style={s.saveBtn} activeOpacity={0.85}>
-          <Text style={s.saveBtnText}>Guardar cambios</Text>
-        </TouchableOpacity>
+        <AppButton
+          label="Guardar cambios"
+          onPress={handleSave}
+          loading={saving}
+          disabled={!isValid}
+          style={s.saveBtn}
+        />
+
         <View style={{ height: 32 }} />
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-const s = StyleSheet.create({
-  root:         { flex: 1, backgroundColor: C.canvas },
-  header:       { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 20, paddingTop: 8, paddingBottom: 8 },
-  backBtn:      { width: 36, height: 36, borderRadius: 18, backgroundColor: C.white, borderWidth: 1, borderColor: C.border, alignItems: 'center', justifyContent: 'center' },
-  title:        { fontSize: 20, fontWeight: '800', color: C.ink, letterSpacing: -0.5 },
-  scroll:       { paddingHorizontal: 20, paddingTop: 16, gap: 10 },
-  avatarSection:{ alignItems: 'center', gap: 10, paddingVertical: 12 },
-  avatar:       { width: 80, height: 80, borderRadius: 40, backgroundColor: C.ink, alignItems: 'center', justifyContent: 'center' },
-  avatarText:   { color: '#fff', fontSize: 32, fontWeight: '800' },
-  changePhoto:  { fontSize: 14, fontWeight: '700', color: C.accent },
-  sectionLabel: { fontSize: 11, fontWeight: '700', color: C.muted, letterSpacing: 0.8, marginTop: 6, marginBottom: 2 },
-  card:         { backgroundColor: C.white, borderRadius: 16, borderWidth: 1.5, borderColor: C.border, paddingHorizontal: 16 },
-  sep:          { height: 1, backgroundColor: C.border },
-  field:        { paddingVertical: 14, gap: 8 },
-  fieldLabel:   { fontSize: 12, fontWeight: '700', color: C.muted, letterSpacing: 0.5 },
-  input:        { fontSize: 15, color: C.ink, fontFamily: 'PlusJakartaSans-Medium', padding: 0 },
-  selector:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  selectorValue:{ fontSize: 15, color: C.ink, fontWeight: '500' },
-  dropdown:     { marginTop: 8, borderRadius: 10, borderWidth: 1, borderColor: C.border, overflow: 'hidden' },
-  dropItem:     { paddingHorizontal: 12, paddingVertical: 11 },
-  dropItemActive:    { backgroundColor: C.accent },
-  dropItemText:      { fontSize: 14, color: C.ink, fontWeight: '500' },
-  dropItemTextActive:{ color: '#fff', fontWeight: '700' },
-  infoRow:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 14 },
-  infoLabel:    { fontSize: 15, fontWeight: '500', color: C.ink },
-  infoValue:    { fontSize: 14, color: C.muted, fontWeight: '500' },
-  saveBtn:      { backgroundColor: C.accent, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 8 },
-  saveBtnText:  { fontSize: 16, fontWeight: '700', color: '#fff' },
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
+  root:   { flex: 1, backgroundColor: colors.canvas },
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 16, paddingTop: 8, paddingBottom: 8,
+  },
+  title:       { fontSize: 20, fontWeight: '800', color: colors.ink, letterSpacing: -0.5 },
+  saveTopBtn:  { backgroundColor: colors.accent, borderRadius: Radius.md, paddingHorizontal: 16, paddingVertical: 9, minWidth: 72, alignItems: 'center' },
+  saveTopText: { color: '#fff', fontSize: 14, fontWeight: '700' },
+
+  scroll: { paddingHorizontal: 20, paddingTop: 8, gap: 10 },
+
+  logoSection:     { alignItems: 'center', gap: 12, paddingVertical: 16 },
+  logoWrap:        { position: 'relative' },
+  logoImg:         { width: 90, height: 90, borderRadius: 45 },
+  logoPlaceholder: { width: 90, height: 90, borderRadius: 45, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' },
+  logoInitial:     { color: '#fff', fontSize: 36, fontWeight: '800' },
+  cameraBadge: {
+    position: 'absolute', bottom: 0, right: 0,
+    width: 28, height: 28, borderRadius: 14,
+    backgroundColor: colors.accent, borderWidth: 2, borderColor: colors.canvas,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  logoActions:    { flexDirection: 'row', gap: 16 },
+  changeLogoText: { fontSize: 14, fontWeight: '700', color: colors.accent },
+  removeLogoText: { fontSize: 14, fontWeight: '600', color: colors.muted },
+
+  field:         { paddingVertical: 14, gap: 8 },
+  fieldLabel:    { fontSize: 12, fontWeight: '700', color: colors.muted, letterSpacing: 0.5 },
+  input:         { fontSize: 15, color: colors.ink, padding: 0 },
+  selector:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  selectorValue: { fontSize: 15, color: colors.ink, fontWeight: '500' },
+  dropdown:      { marginTop: 8, borderRadius: Radius.md, borderWidth: 1, borderColor: colors.border, overflow: 'hidden' },
+  dropItem:      { paddingHorizontal: 12, paddingVertical: 11 },
+  dropItemActive:     { backgroundColor: colors.accent },
+  dropItemText:       { fontSize: 14, color: colors.ink, fontWeight: '500' },
+  dropItemTextActive: { color: '#fff', fontWeight: '700' },
+
+  infoRow:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 14 },
+  infoLabel: { fontSize: 15, fontWeight: '500', color: colors.ink },
+  infoValue: { fontSize: 14, color: colors.muted, fontWeight: '500' },
+
+  saveBtn: { marginTop: 8 },
 });

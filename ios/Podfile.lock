@@ -2929,6 +2929,28 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - react-native-view-shot (5.1.0):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - React-NativeModulesApple (0.85.2):
     - hermes-engine
     - React-callinvoker
@@ -3335,6 +3357,11 @@ PODS:
     - Firebase/Storage (= 11.11.0)
     - React-Core
     - RNFBApp
+  - RNNotifee (9.1.8):
+    - React-Core
+    - RNNotifee/NotifeeCore (= 9.1.8)
+  - RNNotifee/NotifeeCore (9.1.8):
+    - React-Core
   - RNPurchases (10.0.1):
     - PurchasesHybridCommon (= 18.1.0)
     - React-Core
@@ -3503,6 +3530,7 @@ DEPENDENCIES:
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-view-shot (from `../node_modules/react-native-view-shot`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-networking (from `../node_modules/react-native/ReactCommon/react/networking`)
   - React-oscompat (from `../node_modules/react-native/ReactCommon/oscompat`)
@@ -3542,6 +3570,7 @@ DEPENDENCIES:
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
   - "RNFBFunctions (from `../node_modules/@react-native-firebase/functions`)"
   - "RNFBStorage (from `../node_modules/@react-native-firebase/storage`)"
+  - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNPurchases (from `../node_modules/react-native-purchases`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
@@ -3665,6 +3694,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-image-picker"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-view-shot:
+    :path: "../node_modules/react-native-view-shot"
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-networking:
@@ -3743,6 +3774,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/functions"
   RNFBStorage:
     :path: "../node_modules/@react-native-firebase/storage"
+  RNNotifee:
+    :path: "../node_modules/@notifee/react-native"
   RNPurchases:
     :path: "../node_modules/react-native-purchases"
   RNScreens:
@@ -3824,6 +3857,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: cbd9be010701fa23a8786dfff87ad058411a1174
   react-native-image-picker: 09cea417bef3ee25008ad21d4426f9a1fc54ad84
   react-native-safe-area-context: ba7283e541a5f57c6b27a7e33f2c40b8977888c0
+  react-native-view-shot: 6da2aaa0404b8d617ab1689550acdb251d759af9
   React-NativeModulesApple: 993744f42aab769eb02bf5d256b6767c546d0bb5
   React-networking: 723406be4a3bd0ff5f28442e1486704c3ecfe4f4
   React-oscompat: ed8fa636665935e962d4091180ba6f07dcad7ea9
@@ -3865,6 +3899,7 @@ SPEC CHECKSUMS:
   RNFBFirestore: 80b3fb2371c3289343766b8bb5a72a4abf4cc052
   RNFBFunctions: 10cb49ccb3dd3ae511e857ab0f1726f739214c23
   RNFBStorage: f1869dc67955c3cfe17ed7d18e075e9783346c2b
+  RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
   RNPurchases: ef34b2c0c1fcdab1df209fde0d95b026f90ae329
   RNScreens: c58f17578c73435d8c00998cac0d89ad8105263c
   RNSVG: 8efa5ad14ceb98fe56c03793bd55bc4bd30ad84b

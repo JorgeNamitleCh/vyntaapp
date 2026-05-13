@@ -6,6 +6,7 @@ import { POSScreen } from '../features/sales/screens/POSScreen';
 import { CartScreen } from '../features/sales/screens/CartScreen';
 import { PaymentScreen } from '../features/sales/screens/PaymentScreen';
 import { SaleSuccessScreen } from '../features/sales/screens/SaleSuccessScreen';
+import { SaleDetailScreen } from '../features/sales/screens/SaleDetailScreen';
 import { SettingsScreen } from '../features/settings/screens/SettingsScreen';
 import { PaywallScreen } from '../features/settings/screens/PaywallScreen';
 import { NotificationsScreen } from '../features/settings/screens/NotificationsScreen';
@@ -36,6 +37,11 @@ export const AppNavigator = () => (
       name="SaleSuccess"
       component={SaleSuccessScreen}
       options={{ animation: 'fade', gestureEnabled: false }}
+    />
+    <Stack.Screen
+      name="SaleDetail"
+      component={SaleDetailScreen}
+      options={{ animation: 'slide_from_right' }}
     />
     <Stack.Screen
       name="Settings"

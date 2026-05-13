@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -23,16 +23,7 @@ import { authService } from '../../auth/services/auth.service';
 import { useCreateBusiness } from '../hooks/useCreateBusiness';
 import { BusinessSetupScreenProps } from '../../../navigation/types';
 import { VatMode } from '../../../types';
-
-const C = {
-  canvas: '#F4F2EC',
-  ink: '#0E1614',
-  accent: '#0E5C3F',
-  muted: '#6B7280',
-  border: '#E5E3DC',
-  inputBg: '#FFFFFF',
-  cardBg: '#F7F5EE',
-};
+import { useThemeColors, ThemeColors } from '../../../theme/ThemeContext';
 
 type VatOption = {
   id: VatMode;
@@ -76,6 +67,9 @@ const PAYMENT_METHODS: PaymentMethod[] = [
 ];
 
 export const BusinessSetupScreen = ({ navigation, route }: BusinessSetupScreenProps) => {
+  const colors = useThemeColors();
+  const styles = useMemo(() => make_styles(colors), [colors]);
+
   const [vatMode, setVatMode] = useState<VatMode>('included');
   const [paymentMethods, setPaymentMethods] = useState<Set<string>>(new Set(['cash']));
   const { createBusiness, isLoading, error } = useCreateBusiness();
@@ -106,12 +100,12 @@ export const BusinessSetupScreen = ({ navigation, route }: BusinessSetupScreenPr
 
   return (
     <SafeAreaView style={styles.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={C.canvas} />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.canvas} />
 
       {/* Top bar */}
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <ChevronLeft size={20} color={C.ink} strokeWidth={2} />
+          <ChevronLeft size={20} color={colors.ink} strokeWidth={2} />
         </TouchableOpacity>
         <View style={styles.progressDots}>
           <View style={styles.dot} />
@@ -146,7 +140,7 @@ export const BusinessSetupScreen = ({ navigation, route }: BusinessSetupScreenPr
                   onPress={() => setVatMode(id)}
                   activeOpacity={0.75}>
                   <View style={[styles.optionIcon, active && styles.optionIconActive]}>
-                    <Icon size={18} color={active ? '#fff' : C.ink} strokeWidth={1.75} />
+                    <Icon size={18} color={active ? '#fff' : colors.ink} strokeWidth={1.75} />
                   </View>
                   <View style={styles.optionText}>
                     <Text style={[styles.optionLabel, active && styles.optionLabelActive]}>
@@ -176,7 +170,7 @@ export const BusinessSetupScreen = ({ navigation, route }: BusinessSetupScreenPr
                   style={[styles.paymentChip, active && styles.paymentChipActive]}
                   onPress={() => togglePayment(id)}
                   activeOpacity={0.75}>
-                  <Icon size={18} color={active ? '#fff' : C.ink} strokeWidth={1.75} />
+                  <Icon size={18} color={active ? '#fff' : colors.ink} strokeWidth={1.75} />
                   <Text style={[styles.paymentLabel, active && styles.paymentLabelActive]}>
                     {label}
                   </Text>
@@ -207,8 +201,8 @@ export const BusinessSetupScreen = ({ navigation, route }: BusinessSetupScreenPr
   );
 };
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: C.canvas },
+const make_styles = (colors: ThemeColors) => StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.canvas },
 
   topBar: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
@@ -216,67 +210,67 @@ const styles = StyleSheet.create({
   },
   backBtn: {
     width: 38, height: 38, borderRadius: 10,
-    backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border,
+    backgroundColor: colors.cardBg, borderWidth: 1, borderColor: colors.border,
     alignItems: 'center', justifyContent: 'center',
   },
   progressDots: { flexDirection: 'row', gap: 6, alignItems: 'center' },
-  dot: { width: 24, height: 4, borderRadius: 2, backgroundColor: C.border },
-  dotActive: { backgroundColor: C.ink },
-  skipText: { fontSize: 15, color: C.muted, fontWeight: '500', width: 38, textAlign: 'right' },
+  dot: { width: 24, height: 4, borderRadius: 2, backgroundColor: colors.border },
+  dotActive: { backgroundColor: colors.ink },
+  skipText: { fontSize: 15, color: colors.muted, fontWeight: '500', width: 38, textAlign: 'right' },
 
   content: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 12, gap: 24 },
-  stepLabel: { fontSize: 11, fontWeight: '700', color: C.accent, letterSpacing: 0.8, marginBottom: -12 },
-  title: { fontSize: 30, fontWeight: '800', color: C.ink, letterSpacing: -1, marginBottom: -12 },
-  subtitle: { fontSize: 14, color: C.muted, lineHeight: 20 },
+  stepLabel: { fontSize: 11, fontWeight: '700', color: colors.accent, letterSpacing: 0.8, marginBottom: -12 },
+  title: { fontSize: 30, fontWeight: '800', color: colors.ink, letterSpacing: -1, marginBottom: -12 },
+  subtitle: { fontSize: 14, color: colors.muted, lineHeight: 20 },
 
   section: { gap: 10 },
-  sectionLabel: { fontSize: 11, fontWeight: '700', color: C.muted, letterSpacing: 0.8 },
-  sectionHint: { fontSize: 12, color: C.muted, marginTop: -6 },
+  sectionLabel: { fontSize: 11, fontWeight: '700', color: colors.muted, letterSpacing: 0.8 },
+  sectionHint: { fontSize: 12, color: colors.muted, marginTop: -6 },
 
   // IVA options
   optionList: { gap: 8 },
   optionCard: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: C.inputBg, borderRadius: 14,
-    borderWidth: 1.5, borderColor: C.border,
+    backgroundColor: colors.inputBg, borderRadius: 14,
+    borderWidth: 1.5, borderColor: colors.border,
     paddingHorizontal: 14, paddingVertical: 14,
   },
-  optionCardActive: { borderColor: C.ink },
+  optionCardActive: { borderColor: colors.ink },
   optionIcon: {
     width: 36, height: 36, borderRadius: 10,
-    backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border,
+    backgroundColor: colors.cardBg, borderWidth: 1, borderColor: colors.border,
     alignItems: 'center', justifyContent: 'center',
   },
-  optionIconActive: { backgroundColor: C.ink, borderColor: C.ink },
+  optionIconActive: { backgroundColor: colors.ink, borderColor: colors.ink },
   optionText: { flex: 1, gap: 2 },
-  optionLabel: { fontSize: 14, fontWeight: '600', color: C.ink },
-  optionLabelActive: { color: C.ink },
-  optionDescription: { fontSize: 12, color: C.muted, lineHeight: 16 },
+  optionLabel: { fontSize: 14, fontWeight: '600', color: colors.ink },
+  optionLabelActive: { color: colors.ink },
+  optionDescription: { fontSize: 12, color: colors.muted, lineHeight: 16 },
   radio: {
     width: 20, height: 20, borderRadius: 10,
-    borderWidth: 1.5, borderColor: C.border,
+    borderWidth: 1.5, borderColor: colors.border,
     alignItems: 'center', justifyContent: 'center',
   },
-  radioActive: { borderColor: C.ink },
-  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: C.ink },
+  radioActive: { borderColor: colors.ink },
+  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.ink },
 
   // Payment chips
   paymentGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   paymentChip: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     paddingHorizontal: 16, paddingVertical: 12,
-    borderRadius: 12, borderWidth: 1.5, borderColor: C.border,
-    backgroundColor: C.inputBg,
+    borderRadius: 12, borderWidth: 1.5, borderColor: colors.border,
+    backgroundColor: colors.inputBg,
   },
-  paymentChipActive: { backgroundColor: C.ink, borderColor: C.ink },
-  paymentLabel: { fontSize: 14, fontWeight: '600', color: C.ink },
+  paymentChipActive: { backgroundColor: colors.ink, borderColor: colors.ink },
+  paymentLabel: { fontSize: 14, fontWeight: '600', color: colors.ink },
   paymentLabelActive: { color: '#fff' },
 
   error: { fontSize: 13, color: '#DC2626' },
 
   footer: { paddingHorizontal: 20, paddingBottom: 16, paddingTop: 8 },
   createBtn: {
-    backgroundColor: C.accent, borderRadius: 14,
+    backgroundColor: colors.accent, borderRadius: 14,
     paddingVertical: 17, alignItems: 'center',
   },
   createBtnText: { color: '#fff', fontSize: 16, fontWeight: '700', letterSpacing: -0.2 },

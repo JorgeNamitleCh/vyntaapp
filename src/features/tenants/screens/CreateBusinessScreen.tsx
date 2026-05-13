@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   TextInput,
@@ -14,16 +14,7 @@ import { Text } from '../../../components/Text';
 import { Coffee, ShoppingBag, Flame, Sparkles, Tag, Package, ChevronLeft, ChevronDown } from 'lucide-react-native';
 import { authService } from '../../auth/services/auth.service';
 import { CreateBusinessScreenProps } from '../../../navigation/types';
-
-const C = {
-  canvas: '#F4F2EC',
-  ink: '#0E1614',
-  accent: '#0E5C3F',
-  muted: '#6B7280',
-  border: '#E5E3DC',
-  inputBg: '#FFFFFF',
-  cardBg: '#F7F5EE',
-};
+import { useThemeColors, ThemeColors } from '../../../theme/ThemeContext';
 
 type BusinessType = {
   Icon: React.FC<{ size: number; color: string; strokeWidth: number }>;
@@ -42,6 +33,9 @@ const BUSINESS_TYPES: BusinessType[] = [
 const ROWS = [BUSINESS_TYPES.slice(0, 3), BUSINESS_TYPES.slice(3, 6)];
 
 export const CreateBusinessScreen = ({ navigation }: CreateBusinessScreenProps) => {
+  const colors = useThemeColors();
+  const styles = useMemo(() => make_styles(colors), [colors]);
+
   const [name, setName] = useState('');
   const [selectedType, setSelectedType] = useState<string | null>(null);
 
@@ -58,7 +52,7 @@ export const CreateBusinessScreen = ({ navigation }: CreateBusinessScreenProps) 
 
   return (
     <SafeAreaView style={styles.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={C.canvas} />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.canvas} />
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -66,7 +60,7 @@ export const CreateBusinessScreen = ({ navigation }: CreateBusinessScreenProps) 
         {/* Top bar */}
         <View style={styles.topBar}>
           <TouchableOpacity style={styles.backBtn} onPress={() => authService.signOut()}>
-            <ChevronLeft size={20} color={C.ink} strokeWidth={2} />
+            <ChevronLeft size={20} color={colors.ink} strokeWidth={2} />
           </TouchableOpacity>
           <View style={styles.progressDots}>
             <View style={[styles.dot, styles.dotActive]} />
@@ -95,7 +89,7 @@ export const CreateBusinessScreen = ({ navigation }: CreateBusinessScreenProps) 
             <TextInput
               style={styles.input}
               placeholder="Café Nami"
-              placeholderTextColor={C.muted}
+              placeholderTextColor={colors.muted}
               value={name}
               onChangeText={setName}
               autoCapitalize="words"
@@ -118,7 +112,7 @@ export const CreateBusinessScreen = ({ navigation }: CreateBusinessScreenProps) 
                         style={[styles.gridCard, selected && styles.gridCardSelected]}
                         onPress={() => setSelectedType(selected ? null : label)}
                         activeOpacity={0.75}>
-                        <Icon size={22} color={selected ? '#fff' : C.ink} strokeWidth={1.75} />
+                        <Icon size={22} color={selected ? '#fff' : colors.ink} strokeWidth={1.75} />
                         <Text style={[styles.gridLabel, selected && styles.gridLabelSelected]}>
                           {label}
                         </Text>
@@ -135,7 +129,7 @@ export const CreateBusinessScreen = ({ navigation }: CreateBusinessScreenProps) 
             <Text style={styles.fieldLabel}>MONEDA</Text>
             <TouchableOpacity style={styles.dropdownRow} activeOpacity={0.7}>
               <Text style={styles.dropdownText}>🇲🇽  Peso mexicano · MXN</Text>
-              <ChevronDown size={16} color={C.muted} strokeWidth={2} />
+              <ChevronDown size={16} color={colors.muted} strokeWidth={2} />
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -156,8 +150,8 @@ export const CreateBusinessScreen = ({ navigation }: CreateBusinessScreenProps) 
   );
 };
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: C.canvas },
+const make_styles = (colors: ThemeColors) => StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.canvas },
   flex: { flex: 1 },
 
   topBar: {
@@ -170,51 +164,51 @@ const styles = StyleSheet.create({
   },
   backBtn: {
     width: 38, height: 38, borderRadius: 10,
-    backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border,
+    backgroundColor: colors.cardBg, borderWidth: 1, borderColor: colors.border,
     alignItems: 'center', justifyContent: 'center',
   },
   progressDots: { flexDirection: 'row', gap: 6, alignItems: 'center' },
-  dot: { width: 24, height: 4, borderRadius: 2, backgroundColor: C.border },
-  dotActive: { backgroundColor: C.ink },
-  skipText: { fontSize: 15, color: C.muted, fontWeight: '500', width: 38, textAlign: 'right' },
+  dot: { width: 24, height: 4, borderRadius: 2, backgroundColor: colors.border },
+  dotActive: { backgroundColor: colors.ink },
+  skipText: { fontSize: 15, color: colors.muted, fontWeight: '500', width: 38, textAlign: 'right' },
 
   content: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 12, gap: 20 },
-  stepLabel: { fontSize: 11, fontWeight: '700', color: C.accent, letterSpacing: 0.8, marginBottom: -8 },
-  title: { fontSize: 30, fontWeight: '800', color: C.ink, letterSpacing: -1, marginBottom: -8 },
-  subtitle: { fontSize: 14, color: C.muted, lineHeight: 20 },
+  stepLabel: { fontSize: 11, fontWeight: '700', color: colors.accent, letterSpacing: 0.8, marginBottom: -8 },
+  title: { fontSize: 30, fontWeight: '800', color: colors.ink, letterSpacing: -1, marginBottom: -8 },
+  subtitle: { fontSize: 14, color: colors.muted, lineHeight: 20 },
 
   fieldGroup: { gap: 8 },
-  fieldLabel: { fontSize: 11, fontWeight: '700', color: C.muted, letterSpacing: 0.8 },
+  fieldLabel: { fontSize: 11, fontWeight: '700', color: colors.muted, letterSpacing: 0.8 },
   input: {
-    backgroundColor: C.inputBg, borderRadius: 12,
-    borderWidth: 1.5, borderColor: C.border,
+    backgroundColor: colors.inputBg, borderRadius: 12,
+    borderWidth: 1.5, borderColor: colors.border,
     paddingHorizontal: 16, paddingVertical: 14,
-    fontSize: 16, color: C.ink,
+    fontSize: 16, color: colors.ink,
   },
 
   grid: { gap: 10 },
   gridRow: { flexDirection: 'row', gap: 10 },
   gridCard: {
     flex: 1, aspectRatio: 1, borderRadius: 14,
-    borderWidth: 1.5, borderColor: C.border,
-    backgroundColor: C.inputBg, padding: 14,
+    borderWidth: 1.5, borderColor: colors.border,
+    backgroundColor: colors.inputBg, padding: 14,
     justifyContent: 'space-between',
   },
-  gridCardSelected: { backgroundColor: C.ink, borderColor: C.ink },
-  gridLabel: { fontSize: 13, fontWeight: '600', color: C.ink },
+  gridCardSelected: { backgroundColor: colors.ink, borderColor: colors.ink },
+  gridLabel: { fontSize: 13, fontWeight: '600', color: colors.ink },
   gridLabelSelected: { color: '#fff' },
 
   dropdownRow: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: C.inputBg, borderRadius: 12,
-    borderWidth: 1.5, borderColor: C.border,
+    backgroundColor: colors.inputBg, borderRadius: 12,
+    borderWidth: 1.5, borderColor: colors.border,
     paddingHorizontal: 16, paddingVertical: 14,
   },
-  dropdownText: { fontSize: 15, color: C.ink, fontWeight: '500' },
+  dropdownText: { fontSize: 15, color: colors.ink, fontWeight: '500' },
 
   footer: { paddingHorizontal: 20, paddingBottom: 16, paddingTop: 8 },
   createBtn: {
-    backgroundColor: C.accent, borderRadius: 14,
+    backgroundColor: colors.accent, borderRadius: 14,
     paddingVertical: 17, alignItems: 'center',
   },
   createBtnDisabled: { opacity: 0.4 },

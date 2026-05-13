@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import { ITenantRepository, CreateTenantParams } from '../interfaces/ITenantRepository';
+import { ITenantRepository, CreateTenantParams, UpdateTenantParams } from '../interfaces/ITenantRepository';
 import { Tenant, User } from '../../types';
 import { COLLECTIONS } from '../../config/firebase';
 
@@ -55,5 +55,12 @@ export const firebaseTenantRepository: ITenantRepository = {
     const user: User = { uid, phone, tenantId };
 
     return { tenant, user };
+  },
+
+  async updateTenant(tenantId: string, params: UpdateTenantParams): Promise<void> {
+    const clean = Object.fromEntries(
+      Object.entries(params).filter(([, v]) => v !== undefined),
+    );
+    await firestore().collection(COLLECTIONS.TENANTS).doc(tenantId).update(clean);
   },
 };

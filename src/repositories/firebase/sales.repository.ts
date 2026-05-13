@@ -9,6 +9,9 @@ const col = (tenantId: string) =>
     .doc(tenantId)
     .collection(TENANT_COLLECTIONS.SALES);
 
+const clean = (obj: Record<string, any>): Record<string, any> =>
+  Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined));
+
 const toSale = (doc: { id: string; data(): Record<string, any> | undefined }): Sale => {
   const d = doc.data()!;
   return {
@@ -36,7 +39,7 @@ export const firebaseSalesRepository: ISalesRepository = {
       tenantId,
       createdAt: new Date(),
     };
-    await ref.set({ ...saleData, tenantId, id: ref.id, createdAt: now });
+    await ref.set(clean({ ...saleData, tenantId, id: ref.id, createdAt: now }));
     return sale;
   },
 

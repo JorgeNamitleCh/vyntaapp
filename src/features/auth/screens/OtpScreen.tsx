@@ -1,28 +1,24 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   View, TextInput, TouchableOpacity, StyleSheet,
   ActivityIndicator, KeyboardAvoidingView, Platform,
   SafeAreaView, StatusBar,
 } from 'react-native';
 import { Text } from '../../../components/Text';
-import { ChevronLeft } from 'lucide-react-native';
+import { AppButton } from '../../../components/AppButton';
+import { BackButton } from '../../../components/BackButton';
 import { useAuth } from '../hooks/useAuth';
 import { OtpScreenProps } from '../../../navigation/types';
-
-const C = {
-  canvas:  '#F4F2EC',
-  ink:     '#0E1614',
-  accent:  '#0E5C3F',
-  muted:   '#6B7280',
-  border:  '#E5E3DC',
-  white:   '#FFFFFF',
-  error:   '#DC2626',
-};
+import { Radius } from '../../../theme';
+import { useThemeColors, ThemeColors } from '../../../theme/ThemeContext';
 
 const RESEND_SECONDS = 60;
 const CODE_LENGTH    = 6;
 
 export const OtpScreen = ({ navigation, route }: OtpScreenProps) => {
+  const colors = useThemeColors();
+  const s = useMemo(() => makeStyles(colors), [colors]);
+
   const { phoneNumber, verificationId: initialVerificationId } = route.params;
   const [verificationId, setVerificationId] = useState(initialVerificationId);
   const [code, setCode]       = useState('');
@@ -54,23 +50,19 @@ export const OtpScreen = ({ navigation, route }: OtpScreenProps) => {
   const handleCodeChange = (text: string) => {
     const digits = text.replace(/\D/g, '').slice(0, CODE_LENGTH);
     setCode(digits);
-    if (digits.length === CODE_LENGTH) {
-      inputRef.current?.blur();
-    }
+    if (digits.length === CODE_LENGTH) inputRef.current?.blur();
   };
 
   const digits = code.split('').concat(Array(CODE_LENGTH - code.length).fill(''));
 
   return (
     <SafeAreaView style={s.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={C.canvas} />
-      <KeyboardAvoidingView
-        style={s.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <StatusBar barStyle="dark-content" backgroundColor={colors.canvas} />
+      <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
 
-        <TouchableOpacity style={s.backBtn} onPress={() => navigation.goBack()}>
-          <ChevronLeft size={20} color={C.ink} strokeWidth={2} />
-        </TouchableOpacity>
+        <View style={s.backRow}>
+          <BackButton onPress={() => navigation.goBack()} />
+        </View>
 
         <View style={s.container}>
           <View style={s.header}>
@@ -116,21 +108,18 @@ export const OtpScreen = ({ navigation, route }: OtpScreenProps) => {
 
           {error ? <Text style={s.error}>{error}</Text> : null}
 
-          <TouchableOpacity
-            style={[s.verifyBtn, code.length < CODE_LENGTH && s.verifyBtnDisabled]}
+          <AppButton
+            label="Verificar"
             onPress={handleVerify}
-            disabled={code.length < CODE_LENGTH || isVerifying}
-            activeOpacity={0.85}>
-            {isVerifying ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={s.verifyBtnText}>Verificar</Text>
-            )}
-          </TouchableOpacity>
+            loading={isVerifying}
+            disabled={code.length < CODE_LENGTH}
+          />
 
           <TouchableOpacity onPress={handleResend} disabled={seconds > 0} style={s.resendRow}>
             {seconds > 0 ? (
-              <Text style={s.resendDisabled}>Reenviar código en <Text style={s.resendTimer}>{seconds}s</Text></Text>
+              <Text style={s.resendDisabled}>
+                Reenviar código en <Text style={s.resendTimer}>{seconds}s</Text>
+              </Text>
             ) : (
               <Text style={s.resendActive}>Reenviar código</Text>
             )}
@@ -141,54 +130,35 @@ export const OtpScreen = ({ navigation, route }: OtpScreenProps) => {
   );
 };
 
-const s = StyleSheet.create({
-  root:   { flex: 1, backgroundColor: C.canvas },
-  flex:   { flex: 1 },
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
+  root:    { flex: 1, backgroundColor: colors.canvas },
+  flex:    { flex: 1 },
+  backRow: { marginTop: 8, marginLeft: 16 },
 
-  backBtn: {
-    marginTop: 8, marginLeft: 16,
-    width: 38, height: 38, borderRadius: 10,
-    backgroundColor: C.white, borderWidth: 1, borderColor: C.border,
-    alignItems: 'center', justifyContent: 'center',
-  },
-
-  container: {
-    flex: 1, paddingHorizontal: 20, paddingTop: 28, gap: 24,
-  },
+  container: { flex: 1, paddingHorizontal: 20, paddingTop: 28, gap: 24 },
 
   header:   { gap: 8 },
-  title:    { fontSize: 30, fontWeight: '800', color: C.ink, letterSpacing: -1 },
-  subtitle: { fontSize: 15, color: C.muted, lineHeight: 22 },
-  phone:    { fontSize: 15, fontWeight: '700', color: C.ink },
+  title:    { fontSize: 30, fontWeight: '800', color: colors.ink, letterSpacing: -1 },
+  subtitle: { fontSize: 15, color: colors.muted, lineHeight: 22 },
+  phone:    { fontSize: 15, fontWeight: '700', color: colors.ink },
 
-  hiddenInput: {
-    position: 'absolute', width: 1, height: 1, opacity: 0,
-  },
+  hiddenInput: { position: 'absolute', width: 1, height: 1, opacity: 0 },
 
-  digitsRow: {
-    flexDirection: 'row', gap: 10, justifyContent: 'center',
-  },
+  digitsRow: { flexDirection: 'row', gap: 10, justifyContent: 'center' },
   digitBox: {
-    width: 48, height: 56, borderRadius: 14,
-    borderWidth: 1.5, borderColor: C.border,
-    backgroundColor: C.white,
+    width: 48, height: 56, borderRadius: Radius.xl,
+    borderWidth: 1.5, borderColor: colors.border,
+    backgroundColor: colors.white,
     alignItems: 'center', justifyContent: 'center',
   },
-  digitBoxFocused: { borderColor: C.accent, borderWidth: 2 },
-  digitBoxFilled:  { borderColor: C.ink },
-  digitText: { fontSize: 24, fontWeight: '700', color: C.ink },
+  digitBoxFocused: { borderColor: colors.accent, borderWidth: 2 },
+  digitBoxFilled:  { borderColor: colors.ink },
+  digitText: { fontSize: 24, fontWeight: '700', color: colors.ink },
 
-  error: { fontSize: 13, color: C.error, textAlign: 'center' },
+  error: { fontSize: 13, color: colors.error, textAlign: 'center' },
 
-  verifyBtn: {
-    backgroundColor: C.accent, borderRadius: 14,
-    paddingVertical: 17, alignItems: 'center',
-  },
-  verifyBtnDisabled: { opacity: 0.4 },
-  verifyBtnText: { color: '#fff', fontSize: 16, fontWeight: '700', letterSpacing: -0.2 },
-
-  resendRow:     { alignItems: 'center', paddingVertical: 4 },
-  resendDisabled:{ fontSize: 14, color: C.muted },
-  resendTimer:   { fontWeight: '700', color: C.muted },
-  resendActive:  { fontSize: 14, fontWeight: '700', color: C.accent },
+  resendRow:      { alignItems: 'center', paddingVertical: 4 },
+  resendDisabled: { fontSize: 14, color: colors.muted },
+  resendTimer:    { fontWeight: '700', color: colors.muted },
+  resendActive:   { fontSize: 14, fontWeight: '700', color: colors.accent },
 });

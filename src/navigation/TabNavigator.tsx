@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { Text } from '../components/Text';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -10,15 +10,9 @@ import { HomeScreen } from '../features/home/screens/HomeScreen';
 import { InventoryNavigator } from './InventoryNavigator';
 import { ExpensesNavigator } from './ExpensesNavigator';
 import { ReportsScreen } from '../features/reports/screens/ReportsScreen';
+import { useThemeColors, ThemeColors } from '../theme/ThemeContext';
 
 const Tab = createBottomTabNavigator<AppTabParamList>();
-
-const C = {
-  ink: '#0E1614',
-  accent: '#0E5C3F',
-  muted: '#9CA3AF',
-  border: '#E5E3DC',
-};
 
 const TAB_ICONS: Record<string, any> = {
   Home: Home,
@@ -41,6 +35,8 @@ const Placeholder = ({ name }: { name: string }) => (
 );
 
 const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
+  const colors = useThemeColors();
+  const tab = useMemo(() => make_tab(colors), [colors]);
   const stackNav = navigation.getParent<NativeStackNavigationProp<AppStackParamList>>();
   const left = state.routes.slice(0, 2);
   const right = state.routes.slice(2);
@@ -54,7 +50,7 @@ const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
         style={tab.item}
         onPress={() => navigation.navigate(route.name)}
         activeOpacity={0.7}>
-        <Icon size={22} color={focused ? C.ink : C.muted} strokeWidth={focused ? 2 : 1.75} />
+        <Icon size={22} color={focused ? colors.ink : colors.muted} strokeWidth={focused ? 2 : 1.75} />
         <Text style={[tab.label, focused && tab.labelActive]}>{label}</Text>
       </TouchableOpacity>
     );
@@ -80,7 +76,7 @@ const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
   );
 };
 
-const tab = StyleSheet.create({
+const make_tab = (colors: ThemeColors) => StyleSheet.create({
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -104,22 +100,22 @@ const tab = StyleSheet.create({
   label: {
     fontSize: 10,
     fontWeight: '500',
-    color: C.muted,
+    color: colors.muted,
   },
   labelActive: {
-    color: C.ink,
+    color: colors.ink,
     fontWeight: '700',
   },
   fab: {
     width: 58,
     height: 58,
     borderRadius: 29,
-    backgroundColor: C.accent,
+    backgroundColor: colors.accent,
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 8,
     marginTop: -20,
-    shadowColor: C.accent,
+    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 8,

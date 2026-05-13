@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef } from 'react';
 import {
-  View, TouchableOpacity, FlatList,
+  View, TouchableOpacity, FlatList, Image,
   StyleSheet, SafeAreaView, StatusBar,
   TextInput, ActivityIndicator,
 } from 'react-native';
@@ -10,15 +10,9 @@ import { POSScreenProps } from '../../../navigation/types';
 import { useCartStore } from '../../../store/cartStore';
 import { useProducts } from '../../inventory/hooks/useProducts';
 import { Product } from '../../../types';
+import { useThemeColors, ThemeColors } from '../../../theme/ThemeContext';
 
-const C = {
-  canvas:  '#F8F8F8',
-  ink:     '#0E1614',
-  accent:  '#0E5C3F',
-  muted:   '#6B7280',
-  border:  '#E5E3DC',
-  inputBg: '#FFFFFF',
-};
+// POS uses a slightly lighter background than the rest of the app
 
 const CATEGORY_COLORS: Record<string, string> = {
   Café:      '#3B1A0A',
@@ -34,6 +28,10 @@ const colorForProduct = (p: Product): string =>
   CATEGORY_COLORS[p.category ?? ''] ?? DEFAULT_COLOR;
 
 export const POSScreen = ({ navigation }: POSScreenProps) => {
+  const themeColors = useThemeColors();
+  const colors = { ...themeColors, canvas: '#F8F8F8' };
+  const s = useMemo(() => make_s(colors), [colors]);
+
   const [activeCat,   setActiveCat]   = useState('Todo');
   const [searchOpen,  setSearchOpen]  = useState(false);
   const [search,      setSearch]      = useState('');
@@ -73,7 +71,11 @@ export const POSScreen = ({ navigation }: POSScreenProps) => {
     return (
       <View style={[s.productCard, index % 2 === 0 ? s.cardLeft : s.cardRight]}>
         <View style={[s.productImage, { backgroundColor: color }]}>
-          <Text style={s.productInitial}>{item.name.charAt(0).toUpperCase()}</Text>
+          {item.imageUrl ? (
+            <Image source={{ uri: item.imageUrl }} style={s.productPhoto} />
+          ) : (
+            <Text style={s.productInitial}>{item.name.charAt(0).toUpperCase()}</Text>
+          )}
           {qty > 0 && (
             <View style={s.qtyBadge}>
               <Text style={s.qtyBadgeText}>{qty}</Text>
@@ -86,7 +88,7 @@ export const POSScreen = ({ navigation }: POSScreenProps) => {
             <Text style={s.productPrice}>${item.price.toLocaleString('es-MX')}</Text>
             <TouchableOpacity
               style={s.addBtn}
-              onPress={() => addItem({ id: item.id, name: item.name, price: item.price, color })}
+              onPress={() => addItem({ id: item.id, name: item.name, price: item.price, color, imageUrl: item.imageUrl })}
               activeOpacity={0.75}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
               <Text style={s.addBtnText}>+</Text>
@@ -99,40 +101,40 @@ export const POSScreen = ({ navigation }: POSScreenProps) => {
 
   return (
     <SafeAreaView style={s.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={C.canvas} />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.canvas} />
 
       {searchOpen ? (
         <View style={s.searchHeader}>
           <View style={s.searchBox}>
-            <Search size={16} color={C.muted} strokeWidth={1.75} />
+            <Search size={16} color={colors.muted} strokeWidth={1.75} />
             <TextInput
               ref={searchRef}
               style={s.searchInput}
               value={search}
               onChangeText={setSearch}
               placeholder="Buscar producto..."
-              placeholderTextColor={C.muted}
+              placeholderTextColor={colors.muted}
               returnKeyType="search"
             />
           </View>
           <TouchableOpacity style={s.headerBtn} onPress={closeSearch} activeOpacity={0.7}>
-            <X size={18} color={C.ink} strokeWidth={2} />
+            <X size={18} color={colors.ink} strokeWidth={2} />
           </TouchableOpacity>
         </View>
       ) : (
         <View style={s.header}>
           <TouchableOpacity style={s.headerBtn} onPress={() => navigation.goBack()} activeOpacity={0.7}>
-            <ChevronLeft size={20} color={C.ink} strokeWidth={2} />
+            <ChevronLeft size={20} color={colors.ink} strokeWidth={2} />
           </TouchableOpacity>
           <View style={s.headerTitle}>
             <Text style={s.headerSub}>NUEVA VENTA</Text>
           </View>
           <View style={s.headerActions}>
             <TouchableOpacity style={s.headerBtn} activeOpacity={0.7}>
-              <ScanLine size={20} color={C.ink} strokeWidth={1.75} />
+              <ScanLine size={20} color={colors.ink} strokeWidth={1.75} />
             </TouchableOpacity>
             <TouchableOpacity style={s.headerBtn} onPress={openSearch} activeOpacity={0.7}>
-              <Search size={20} color={C.ink} strokeWidth={1.75} />
+              <Search size={20} color={colors.ink} strokeWidth={1.75} />
             </TouchableOpacity>
           </View>
         </View>
@@ -156,7 +158,7 @@ export const POSScreen = ({ navigation }: POSScreenProps) => {
 
       {isLoading ? (
         <View style={s.loadingWrap}>
-          <ActivityIndicator color={C.accent} />
+          <ActivityIndicator color={colors.accent} />
         </View>
       ) : filtered.length === 0 ? (
         <View style={s.loadingWrap}>
@@ -200,8 +202,8 @@ export const POSScreen = ({ navigation }: POSScreenProps) => {
 const CARD_GAP  = 10;
 const CARD_H_PAD = 14;
 
-const s = StyleSheet.create({
-  root: { flex: 1, backgroundColor: C.canvas },
+const make_s = (colors: ThemeColors) => StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.canvas },
 
   header: {
     flexDirection: 'row', alignItems: 'center',
@@ -213,18 +215,18 @@ const s = StyleSheet.create({
   },
   searchBox: {
     flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: C.inputBg, borderRadius: 12,
-    borderWidth: 1.5, borderColor: C.border,
+    backgroundColor: colors.inputBg, borderRadius: 12,
+    borderWidth: 1.5, borderColor: colors.border,
     paddingHorizontal: 12, height: 40,
   },
-  searchInput:  { flex: 1, fontSize: 14, color: C.ink, padding: 0 },
+  searchInput:  { flex: 1, fontSize: 14, color: colors.ink, padding: 0 },
   headerBtn: {
     width: 36, height: 36, borderRadius: 18,
-    backgroundColor: C.inputBg, borderWidth: 1, borderColor: C.border,
+    backgroundColor: colors.inputBg, borderWidth: 1, borderColor: colors.border,
     alignItems: 'center', justifyContent: 'center',
   },
   headerTitle:   { flex: 1, paddingLeft: 4 },
-  headerSub:     { fontSize: 10, fontWeight: '700', color: C.muted, letterSpacing: 1 },
+  headerSub:     { fontSize: 10, fontWeight: '700', color: colors.muted, letterSpacing: 1 },
   headerActions: { flexDirection: 'row', gap: 6 },
 
   catRow: {
@@ -233,27 +235,28 @@ const s = StyleSheet.create({
   },
   catChip: {
     paddingVertical: 8, paddingHorizontal: 14,
-    borderRadius: 20, backgroundColor: C.inputBg,
-    borderWidth: 1.5, borderColor: C.border,
+    borderRadius: 20, backgroundColor: colors.inputBg,
+    borderWidth: 1.5, borderColor: colors.border,
   },
-  catChipActive:    { backgroundColor: C.ink, borderColor: C.ink },
-  catChipText:      { fontSize: 13, fontWeight: '600', color: C.muted },
+  catChipActive:    { backgroundColor: colors.ink, borderColor: colors.ink },
+  catChipText:      { fontSize: 13, fontWeight: '600', color: colors.muted },
   catChipTextActive:{ color: '#fff' },
 
   loadingWrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  emptyText:   { fontSize: 14, color: C.muted, textAlign: 'center', lineHeight: 22 },
+  emptyText:   { fontSize: 14, color: colors.muted, textAlign: 'center', lineHeight: 22 },
 
   grid: { paddingHorizontal: CARD_H_PAD, paddingBottom: 24 },
 
   productCard: {
-    flex: 1, backgroundColor: C.inputBg, borderRadius: 14,
+    flex: 1, backgroundColor: colors.inputBg, borderRadius: 14,
     overflow: 'hidden', marginBottom: CARD_GAP,
-    borderWidth: 1, borderColor: C.border,
+    borderWidth: 1, borderColor: colors.border,
   },
   cardLeft:  { marginRight: CARD_GAP / 2 },
   cardRight: { marginLeft: CARD_GAP / 2 },
 
-  productImage: { height: 110, alignItems: 'center', justifyContent: 'center' },
+  productImage: { height: 110, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  productPhoto: { width: '100%', height: 110, resizeMode: 'cover' },
   productInitial: {
     fontSize: 44, fontWeight: '800',
     color: 'rgba(255,255,255,0.35)', letterSpacing: -1,
@@ -261,24 +264,24 @@ const s = StyleSheet.create({
   qtyBadge: {
     position: 'absolute', top: 8, right: 8,
     minWidth: 22, height: 22, borderRadius: 11,
-    backgroundColor: C.accent,
+    backgroundColor: colors.accent,
     alignItems: 'center', justifyContent: 'center', paddingHorizontal: 5,
   },
   qtyBadgeText: { fontSize: 12, fontWeight: '800', color: '#fff' },
 
   productInfo:   { paddingHorizontal: 10, paddingTop: 8, paddingBottom: 10, gap: 4 },
-  productName:   { fontSize: 13, fontWeight: '600', color: C.ink },
+  productName:   { fontSize: 13, fontWeight: '600', color: colors.ink },
   productFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  productPrice:  { fontSize: 14, fontWeight: '700', color: C.ink },
+  productPrice:  { fontSize: 14, fontWeight: '700', color: colors.ink },
   addBtn: {
     width: 28, height: 28, borderRadius: 14,
-    backgroundColor: C.ink, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center',
   },
   addBtnText: { fontSize: 20, color: '#fff', lineHeight: 26, fontWeight: '400' },
 
   cartBar: {
     position: 'absolute', bottom: 16, left: 14, right: 14,
-    backgroundColor: C.ink, borderRadius: 18,
+    backgroundColor: colors.ink, borderRadius: 18,
     flexDirection: 'row', alignItems: 'center',
     paddingVertical: 14, paddingHorizontal: 14, gap: 10,
     shadowColor: '#000', shadowOffset: { width: 0, height: 6 },
@@ -286,7 +289,7 @@ const s = StyleSheet.create({
   },
   cartBadge: {
     width: 36, height: 36, borderRadius: 10,
-    backgroundColor: C.accent, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center',
   },
   cartBadgeText: { fontSize: 15, fontWeight: '800', color: '#fff' },
   cartMid:       { flex: 1, gap: 1 },

@@ -66,7 +66,10 @@ export type AppStackParamList = {
   HelpSupport: undefined;
   BusinessEdit: undefined;
   SwitchBusiness: undefined;
+  SaleDetail: { saleId: string };
 };
+
+export type SaleDetailScreenProps = NativeStackScreenProps<AppStackParamList, 'SaleDetail'>;
 
 export type RootStackParamList = {
   Auth: NavigatorScreenParams<AuthStackParamList>;

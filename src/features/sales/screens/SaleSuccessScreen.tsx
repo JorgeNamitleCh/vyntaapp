@@ -1,20 +1,21 @@
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useMemo, useState } from 'react';
 import {
   View, TouchableOpacity, StyleSheet,
-  SafeAreaView, StatusBar, Animated,
+  SafeAreaView, StatusBar, Animated, Share, ActivityIndicator,
 } from 'react-native';
 import { Text } from '../../../components/Text';
+import { Card } from '../../../components/Card';
+import { Divider } from '../../../components/Divider';
 import { X, ReceiptText } from 'lucide-react-native';
+import { Radius } from '../../../theme';
 import { SaleSuccessScreenProps } from '../../../navigation/types';
+import { captureRef } from 'react-native-view-shot';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { ReceiptCard, ReceiptData } from '../components/ReceiptCard';
+import { useAuthStore } from '../../../store/authStore';
+import { useThemeColors, ThemeColors } from '../../../theme/ThemeContext';
 
-const C = {
-  canvas: '#F4F2EC',
-  ink: '#0E1614',
-  accent: '#0E5C3F',
-  muted: '#6B7280',
-  border: '#E5E3DC',
-  white: '#FFFFFF',
-};
 
 const METHOD_LABELS: Record<string, string> = {
   cash:     'efectivo',
@@ -38,8 +39,14 @@ const genTicket = () => {
 };
 
 export const SaleSuccessScreen = ({ navigation, route }: SaleSuccessScreenProps) => {
+  const colors = useThemeColors();
+  const s = useMemo(() => makeStyles(colors), [colors]);
+
   const { total, change, received, itemCount, paymentMethod, channel } = route.params;
-  const ticket = useMemo(genTicket, []);
+  const ticket   = useMemo(genTicket, []);
+  const tenant   = useAuthStore(s => s.tenant);
+  const receiptRef = useRef<View>(null);
+  const [sharing, setSharing] = useState(false);
 
   const scale   = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -53,9 +60,36 @@ export const SaleSuccessScreen = ({ navigation, route }: SaleSuccessScreenProps)
 
   const [whole, cents] = total.toFixed(2).split('.');
 
+  const receiptData: ReceiptData = {
+    businessName: tenant?.name ?? 'Mi negocio',
+    ticketId:     ticket.replace('#', ''),
+    dateStr:      format(new Date(), "d 'de' MMMM yyyy, HH:mm", { locale: es }),
+    items:        [{ name: `${itemCount} producto${itemCount !== 1 ? 's' : ''}`, qty: 1, unitPrice: total, subtotal: total }],
+    total,
+    paymentLabel: METHOD_LABELS[paymentMethod] ?? paymentMethod,
+  };
+
+  const shareReceipt = async () => {
+    if (!receiptRef.current || sharing) return;
+    setSharing(true);
+    try {
+      const uri = await captureRef(receiptRef, { format: 'png', quality: 1 });
+      await Share.share({ url: uri });
+    } catch (e) {
+      console.warn('share error', e);
+    } finally {
+      setSharing(false);
+    }
+  };
+
   return (
     <SafeAreaView style={s.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={C.canvas} />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.canvas} />
+
+      {/* Off-screen receipt for PNG capture */}
+      <View style={s.offscreen} pointerEvents="none">
+        <ReceiptCard ref={receiptRef} data={receiptData} />
+      </View>
 
       {/* X top-right */}
       <View style={s.topBar}>
@@ -63,7 +97,7 @@ export const SaleSuccessScreen = ({ navigation, route }: SaleSuccessScreenProps)
           style={s.closeBtn}
           onPress={() => navigation.navigate('Tabs', { screen: 'Home' })}
           activeOpacity={0.7}>
-          <X size={18} color={C.ink} strokeWidth={2} />
+          <X size={18} color={colors.ink} strokeWidth={2} />
         </TouchableOpacity>
       </View>
 
@@ -100,7 +134,7 @@ export const SaleSuccessScreen = ({ navigation, route }: SaleSuccessScreenProps)
               </View>
               <View style={s.row}>
                 <Text style={s.rowLabel}>Cambio</Text>
-                <Text style={[s.rowVal, { color: C.accent }]}>
+                <Text style={[s.rowVal, { color: colors.accent }]}>
                   ${change.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                 </Text>
               </View>
@@ -120,9 +154,13 @@ export const SaleSuccessScreen = ({ navigation, route }: SaleSuccessScreenProps)
 
         {/* ── Buttons (inside centered block) ── */}
         <Animated.View style={[s.buttons, { opacity }]}>
-          <TouchableOpacity style={s.whatsappBtn} activeOpacity={0.82}>
-            <ReceiptText size={18} color={C.ink} strokeWidth={1.75} />
-            <Text style={s.whatsappText}>Enviar recibo por WhatsApp</Text>
+          <TouchableOpacity style={s.whatsappBtn} activeOpacity={0.82} onPress={shareReceipt} disabled={sharing}>
+            {sharing
+              ? <ActivityIndicator size="small" color={colors.ink} />
+              : <>
+                  <ReceiptText size={18} color={colors.ink} strokeWidth={1.75} />
+                  <Text style={s.whatsappText}>Compartir recibo</Text>
+                </>}
           </TouchableOpacity>
 
           <View style={s.footerRow}>
@@ -145,13 +183,14 @@ export const SaleSuccessScreen = ({ navigation, route }: SaleSuccessScreenProps)
   );
 };
 
-const s = StyleSheet.create({
-  root: { flex: 1, backgroundColor: C.canvas },
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.canvas },
+  offscreen: { position: 'absolute', top: -9999, left: 0 },
 
   topBar: { alignItems: 'flex-end', paddingHorizontal: 20, paddingTop: 8 },
   closeBtn: {
     width: 36, height: 36, borderRadius: 18,
-    backgroundColor: C.white, borderWidth: 1, borderColor: C.border,
+    backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border,
     alignItems: 'center', justifyContent: 'center',
   },
 
@@ -162,9 +201,9 @@ const s = StyleSheet.create({
 
   checkCircle: {
     width: 80, height: 80, borderRadius: 40,
-    backgroundColor: C.accent,
+    backgroundColor: colors.accent,
     alignItems: 'center', justifyContent: 'center',
-    shadowColor: C.accent,
+    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
@@ -174,48 +213,48 @@ const s = StyleSheet.create({
 
   heroBlock: { alignItems: 'center', gap: 6 },
   ventaLabel: {
-    fontSize: 11, fontWeight: '800', color: C.accent,
+    fontSize: 11, fontWeight: '800', color: colors.accent,
     letterSpacing: 1.5, textTransform: 'uppercase',
   },
   amountRow: { flexDirection: 'row', alignItems: 'flex-end' },
-  amountWhole: { fontSize: 52, fontWeight: '800', color: C.ink, letterSpacing: -2, lineHeight: 58 },
-  amountDot:   { fontSize: 32, fontWeight: '700', color: C.ink, lineHeight: 52, paddingBottom: 2 },
-  amountCents: { fontSize: 32, fontWeight: '700', color: C.ink, lineHeight: 52, paddingBottom: 2 },
-  amountSub:   { fontSize: 13, color: C.muted },
+  amountWhole: { fontSize: 52, fontWeight: '800', color: colors.ink, letterSpacing: -2, lineHeight: 58 },
+  amountDot:   { fontSize: 32, fontWeight: '700', color: colors.ink, lineHeight: 52, paddingBottom: 2 },
+  amountCents: { fontSize: 32, fontWeight: '700', color: colors.ink, lineHeight: 52, paddingBottom: 2 },
+  amountSub:   { fontSize: 13, color: colors.muted },
 
   summaryCard: {
     width: '100%',
-    backgroundColor: C.white, borderRadius: 16,
-    borderWidth: 1.5, borderColor: C.border,
+    backgroundColor: colors.white, borderRadius: 16,
+    borderWidth: 1.5, borderColor: colors.border,
     paddingHorizontal: 18, paddingVertical: 2,
   },
   row: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingVertical: 13,
   },
-  divider: { height: 1, backgroundColor: C.border },
-  rowLabel: { fontSize: 14, color: C.muted },
-  rowVal:   { fontSize: 14, fontWeight: '700', color: C.ink },
+  divider: { height: 1, backgroundColor: colors.border },
+  rowLabel: { fontSize: 14, color: colors.muted },
+  rowVal:   { fontSize: 14, fontWeight: '700', color: colors.ink },
 
   buttons: { width: '100%', gap: 10 },
   whatsappBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    backgroundColor: C.white, borderRadius: 14,
-    borderWidth: 1.5, borderColor: C.border,
+    backgroundColor: colors.white, borderRadius: 14,
+    borderWidth: 1.5, borderColor: colors.border,
     paddingVertical: 14,
   },
-  whatsappText: { fontSize: 15, fontWeight: '600', color: C.ink },
+  whatsappText: { fontSize: 15, fontWeight: '600', color: colors.ink },
 
   footerRow: { flexDirection: 'row', gap: 10 },
   cerrarBtn: {
     flex: 1, paddingVertical: 15, borderRadius: 14,
-    borderWidth: 1.5, borderColor: C.border,
-    alignItems: 'center', backgroundColor: C.canvas,
+    borderWidth: 1.5, borderColor: colors.border,
+    alignItems: 'center', backgroundColor: colors.canvas,
   },
-  cerrarText: { fontSize: 15, fontWeight: '600', color: C.ink },
+  cerrarText: { fontSize: 15, fontWeight: '600', color: colors.ink },
   newSaleBtn: {
     flex: 1, paddingVertical: 15, borderRadius: 14,
-    backgroundColor: C.accent, alignItems: 'center',
+    backgroundColor: colors.accent, alignItems: 'center',
   },
   newSaleText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 });

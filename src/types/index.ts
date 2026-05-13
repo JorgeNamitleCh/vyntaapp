@@ -13,6 +13,7 @@ export interface Tenant {
   vatMode?: VatMode;
   paymentMethods?: string[];
   currency?: string;
+  logoUrl?: string;
 }
 
 export interface User {
@@ -48,6 +49,7 @@ export interface SaleItem {
   quantity: number;
   unitPrice: number;
   subtotal: number;
+  imageUrl?: string;
 }
 
 export interface Sale {
@@ -70,6 +72,7 @@ export interface Expense {
   description: string;
   amount: number;
   category: string;
+  supplier?: string;
   note?: string;
   createdAt: Date;
   createdBy: string;
