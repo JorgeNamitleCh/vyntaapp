@@ -250,7 +250,7 @@ const make_s = (colors: ThemeColors) => StyleSheet.create({
   subtitle: { fontSize: 13, color: colors.muted, marginTop: 2 },
   fab: {
     width: 40, height: 40, borderRadius: 20,
-    backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center', marginTop: 4,
+    backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center', marginTop: 4,
   },
 
   monthNav: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 14 },

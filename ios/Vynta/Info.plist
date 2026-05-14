@@ -35,6 +35,8 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSContactsUsageDescription</key>
+	<string>Importa clientes y empleados desde tus contactos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Selecciona una foto para tu producto</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

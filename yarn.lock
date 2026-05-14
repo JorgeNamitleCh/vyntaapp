@@ -3604,6 +3604,7 @@ __metadata:
     react: 19.2.3
     react-native: 0.85.2
     react-native-calendars: ^1.1314.0
+    react-native-contacts: ^8.0.10
     react-native-image-picker: ^8.2.1
     react-native-purchases: ^10.0.1
     react-native-safe-area-context: ^5.7.0
@@ -8594,6 +8595,16 @@ __metadata:
     moment:
       optional: true
   checksum: 298c113432fa7c8941aff526e60751d5baaa28519ce0245ceac9f0eeb4f9139f89db3c2567790fafe08638028078bc07ea8a5c2f77e7e55c02a8f25cc9cac0b8
+  languageName: node
+  linkType: hard
+
+"react-native-contacts@npm:^8.0.10":
+  version: 8.0.10
+  resolution: "react-native-contacts@npm:8.0.10"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 27cc5bc3d41bacadced24641f467ce0e068e88de57c621a8c524f6adf201f8644f5a26336ad634e71a1378903e96d35d47b130da877a1246d453f42df00bbe96
   languageName: node
   linkType: hard
 

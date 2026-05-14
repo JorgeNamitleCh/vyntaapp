@@ -12,6 +12,7 @@ import {
   ChevronDown, Bell, Settings, TrendingUp, TrendingDown,
   Plus, Package, ReceiptText, BarChart2,
   Banknote, CreditCard, ArrowLeftRight, QrCode, ChevronRight, Target,
+  Users, Truck, FileText, Wallet, LayoutGrid, X,
 } from 'lucide-react-native';
 import { useAuthStore } from '../../../store/authStore';
 import { useGoalsStore } from '../../../store/goalsStore';
@@ -150,10 +151,10 @@ const make_recent = (colors: ThemeColors) => StyleSheet.create({
   iconWrap:   { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   productImg: { width: 36, height: 36, borderRadius: 10 },
   info:     { flex: 1, gap: 2 },
-  saleId:   { fontSize: 13, color: '#0E1614' },
+  saleId:   { fontSize: 13, color: colors.ink },
   bold:     { fontWeight: '700' },
-  ago:      { fontSize: 12, color: '#6B7280' },
-  amount:   { fontSize: 15, fontWeight: '700', color: '#0E1614' },
+  ago:      { fontSize: 12, color: colors.muted },
+  amount:   { fontSize: 15, fontWeight: '700', color: colors.ink },
 });
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -180,6 +181,7 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const recent = useMemo(() => make_recent(colors), [colors]);
   const s = useMemo(() => make_s(colors), [colors]);
   const gm = useMemo(() => make_gm(colors), [colors]);
+  const fm = useMemo(() => make_fm(colors), [colors]);
 
   const { tenant } = useAuthStore();
   const unreadCount = useNotificationStore(s => s.notifications.filter(n => !n.read).length);
@@ -195,6 +197,7 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
 
   // Goal modal state
   const [goalModalVisible, setGoalModalVisible] = useState(false);
+  const [featuresVisible, setFeaturesVisible]   = useState(false);
   const [dailyInput,   setDailyInput]   = useState('');
   const [monthlyInput, setMonthlyInput] = useState('');
 
@@ -384,6 +387,13 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
           ))}
         </View>
 
+        {/* ── More features button ── */}
+        <TouchableOpacity style={s.moreBtn} onPress={() => setFeaturesVisible(true)} activeOpacity={0.8}>
+          <LayoutGrid size={17} color={colors.ink} strokeWidth={1.75} />
+          <Text style={s.moreBtnText}>Más funciones</Text>
+          <ChevronRight size={16} color={colors.muted} strokeWidth={2} />
+        </TouchableOpacity>
+
         {/* ── Low stock alert ── */}
         {dash.lowStockProducts.length > 0 && (
           <TouchableOpacity
@@ -429,6 +439,46 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
         </View>
 
       </ScrollView>
+
+      {/* ── Features modal ── */}
+      <Modal
+        visible={featuresVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setFeaturesVisible(false)}>
+        <TouchableOpacity
+          style={gm.overlay}
+          activeOpacity={1}
+          onPress={() => setFeaturesVisible(false)}
+        />
+        <View style={fm.sheet}>
+          <View style={fm.handle} />
+          <View style={fm.header}>
+            <Text style={fm.title}>Más funciones</Text>
+            <TouchableOpacity onPress={() => setFeaturesVisible(false)} hitSlop={12}>
+              <X size={20} color={colors.ink} strokeWidth={2} />
+            </TouchableOpacity>
+          </View>
+          {[
+            { label: 'Cotizaciones', Icon: FileText, desc: 'Crea y envía cotizaciones',        onPress: () => { setFeaturesVisible(false); stackNav.navigate('Quotes'); } },
+            { label: 'Deudas',       Icon: Wallet,   desc: 'Por cobrar y por pagar',           onPress: () => { setFeaturesVisible(false); stackNav.navigate('Debts'); } },
+            { label: 'Clientes',     Icon: Users,    desc: 'Gestiona tu cartera de clientes',  onPress: () => { setFeaturesVisible(false); stackNav.navigate('Customers'); } },
+            { label: 'Proveedores',  Icon: Truck,    desc: 'Registra a tus proveedores',       onPress: () => { setFeaturesVisible(false); stackNav.navigate('Suppliers'); } },
+            { label: 'Empleados',    Icon: Users,    desc: 'Acceso del equipo',                onPress: () => { setFeaturesVisible(false); stackNav.navigate('Employees'); } },
+          ].map(({ label, Icon, desc, onPress }) => (
+            <TouchableOpacity key={label} style={fm.item} onPress={onPress} activeOpacity={0.75}>
+              <View style={[fm.icon, { backgroundColor: colors.cardBg }]}>
+                <Icon size={22} color={colors.accent} strokeWidth={1.75} />
+              </View>
+              <View style={fm.itemText}>
+                <Text style={fm.itemLabel}>{label}</Text>
+                <Text style={fm.itemDesc}>{desc}</Text>
+              </View>
+              <ChevronRight size={16} color={colors.muted} strokeWidth={2} />
+            </TouchableOpacity>
+          ))}
+        </View>
+      </Modal>
 
       {/* ── Goal modal ── */}
       <Modal
@@ -503,7 +553,7 @@ const make_s = (colors: ThemeColors) => StyleSheet.create({
 
   topBar:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 10, paddingBottom: 8 },
   bizRow:     { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  avatar:     { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  avatar:     { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.hero, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   avatarImg:  { backgroundColor: 'transparent' },
   logoImg:    { width: 36, height: 36, borderRadius: 18 },
   avatarText: { color: '#fff', fontSize: 14, fontWeight: '800' },
@@ -511,7 +561,7 @@ const make_s = (colors: ThemeColors) => StyleSheet.create({
   bizName:    { fontSize: 14, fontWeight: '700', color: colors.ink },
   shiftLabel: { fontSize: 11, color: colors.muted, marginTop: 1 },
   topActions: { flexDirection: 'row', gap: 8 },
-  iconBtn:    { width: 36, height: 36, borderRadius: 10, backgroundColor: '#F0EEE7', borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' },
+  iconBtn:    { width: 36, height: 36, borderRadius: 10, backgroundColor: colors.cardBg, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' },
   notifBadge: { position: 'absolute', top: -4, right: -4, minWidth: 16, height: 16, borderRadius: 8, backgroundColor: '#DC2626', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3, borderWidth: 1.5, borderColor: colors.canvas },
   notifBadgeText: { fontSize: 9, fontWeight: '800', color: '#fff', lineHeight: 11 },
 
@@ -519,7 +569,7 @@ const make_s = (colors: ThemeColors) => StyleSheet.create({
   dateLabel: { fontSize: 11, fontWeight: '700', color: colors.muted, letterSpacing: 0.8 },
   hello:     { fontSize: 36, fontWeight: '800', color: colors.ink, letterSpacing: -1.2, lineHeight: 42 },
 
-  salesCard:   { backgroundColor: colors.ink, borderRadius: 20, padding: 20 },
+  salesCard:   { backgroundColor: colors.hero, borderRadius: 20, padding: 20 },
   cardTopRow:  { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
   cardLabel:   { fontSize: 10, fontWeight: '700', color: 'rgba(255,255,255,0.5)', letterSpacing: 1, marginBottom: 4 },
   amountRow:   { flexDirection: 'row', alignItems: 'flex-end', gap: 2 },
@@ -535,18 +585,21 @@ const make_s = (colors: ThemeColors) => StyleSheet.create({
   statValue:   { fontSize: 17, fontWeight: '800', color: '#fff', letterSpacing: -0.5 },
 
   actionsRow:        { flexDirection: 'row', gap: 10 },
-  actionBtn:         { flex: 1, alignItems: 'center', gap: 6, paddingVertical: 14, borderRadius: 14, backgroundColor: '#F0EEE7', borderWidth: 1.5, borderColor: colors.border },
-  actionBtnPrimary:  { backgroundColor: colors.ink, borderColor: colors.ink },
+  actionBtn:         { flex: 1, alignItems: 'center', gap: 6, paddingVertical: 14, borderRadius: 14, backgroundColor: colors.cardBg, borderWidth: 1.5, borderColor: colors.border },
+  actionBtnPrimary:  { backgroundColor: colors.accent, borderColor: colors.accent },
   actionLabel:       { fontSize: 11, fontWeight: '600', color: colors.ink, textAlign: 'center' },
   actionLabelPrimary:{ color: '#fff' },
 
-  alertCard:  { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#FFFBEB', borderRadius: 14, borderWidth: 1.5, borderColor: '#FCD34D', borderStyle: 'dashed', paddingHorizontal: 14, paddingVertical: 14 },
-  alertIcon:  { width: 36, height: 36, borderRadius: 10, backgroundColor: '#FEF3C7', alignItems: 'center', justifyContent: 'center' },
-  alertText:  { flex: 1, gap: 2 },
-  alertTitle: { fontSize: 14, fontWeight: '700', color: '#92400E' },
-  alertSub:   { fontSize: 12, color: '#A16207' },
+  moreBtn:  { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: colors.white, borderRadius: 14, borderWidth: 1.5, borderColor: colors.border, paddingHorizontal: 16, paddingVertical: 14 },
+  moreBtnText: { flex: 1, fontSize: 14, fontWeight: '600', color: colors.ink },
 
-  recentSection: { backgroundColor: '#F0EEE7', borderRadius: 16, borderWidth: 1.5, borderColor: colors.border, padding: 16 },
+  alertCard:  { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.amberBg, borderRadius: 14, borderWidth: 1.5, borderColor: colors.amber, borderStyle: 'dashed', paddingHorizontal: 14, paddingVertical: 14 },
+  alertIcon:  { width: 36, height: 36, borderRadius: 10, backgroundColor: colors.amberBg, alignItems: 'center', justifyContent: 'center' },
+  alertText:  { flex: 1, gap: 2 },
+  alertTitle: { fontSize: 14, fontWeight: '700', color: colors.amberText },
+  alertSub:   { fontSize: 12, color: colors.amberText },
+
+  recentSection: { backgroundColor: colors.cardBg, borderRadius: 16, borderWidth: 1.5, borderColor: colors.border, padding: 16 },
   recentHeader:  { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
   recentTitle:   { fontSize: 11, fontWeight: '700', color: colors.muted, letterSpacing: 0.8 },
   verTodo:       { fontSize: 13, fontWeight: '600', color: colors.accent },
@@ -587,8 +640,8 @@ const make_gm = (colors: ThemeColors) => StyleSheet.create({
   fieldLabel: { fontSize: 10, fontWeight: '700', color: colors.muted, letterSpacing: 0.8 },
   inputRow:   {
     flexDirection: 'row', alignItems: 'center', gap: 6,
-    backgroundColor: '#fff', borderRadius: 14,
-    borderWidth: 1.5, borderColor: '#E5E3DC',
+    backgroundColor: colors.inputBg, borderRadius: 14,
+    borderWidth: 1.5, borderColor: colors.border,
     paddingHorizontal: 14, paddingVertical: 14,
   },
   prefix: { fontSize: 20, fontWeight: '700', color: colors.ink },
@@ -596,8 +649,26 @@ const make_gm = (colors: ThemeColors) => StyleSheet.create({
   clear:  { fontSize: 13, fontWeight: '600', color: colors.muted },
 
   saveBtn: {
-    backgroundColor: colors.ink, borderRadius: 14,
+    backgroundColor: colors.accent, borderRadius: 14,
     paddingVertical: 17, alignItems: 'center', marginTop: 4,
   },
   saveBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+});
+
+const make_fm = (colors: ThemeColors) => StyleSheet.create({
+  sheet: {
+    backgroundColor: colors.white,
+    borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    paddingHorizontal: 20,
+    paddingTop: 0,
+    paddingBottom: Platform.OS === 'ios' ? 36 : 24,
+  },
+  handle:    { width: 36, height: 4, borderRadius: 2, backgroundColor: colors.border, alignSelf: 'center', marginTop: 12, marginBottom: 16 },
+  header:    { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
+  title:     { fontSize: 18, fontWeight: '800', color: colors.ink },
+  item:      { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: colors.border },
+  icon:      { width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  itemText:  { flex: 1, gap: 2 },
+  itemLabel: { fontSize: 15, fontWeight: '700', color: colors.ink },
+  itemDesc:  { fontSize: 12, color: colors.muted },
 });

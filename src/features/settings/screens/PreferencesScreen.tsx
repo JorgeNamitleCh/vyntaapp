@@ -130,6 +130,6 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   title:      { fontSize: 20, fontWeight: '800', color: colors.ink, letterSpacing: -0.5 },
   scroll:     { paddingHorizontal: 20, paddingTop: 8, gap: 10, paddingBottom: 32 },
   switchRow:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 14 },
-  switchLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  switchLabel:{ fontSize: 15, fontWeight: '500', color: colors.ink, flex: 1 },
+  switchLeft: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
+  switchLabel:{ fontSize: 15, fontWeight: '500', color: colors.ink },
 });

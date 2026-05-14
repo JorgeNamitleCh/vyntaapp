@@ -28,8 +28,7 @@ const colorForProduct = (p: Product): string =>
   CATEGORY_COLORS[p.category ?? ''] ?? DEFAULT_COLOR;
 
 export const POSScreen = ({ navigation }: POSScreenProps) => {
-  const themeColors = useThemeColors();
-  const colors = { ...themeColors, canvas: '#F8F8F8' };
+  const colors = useThemeColors();
   const s = useMemo(() => make_s(colors), [colors]);
 
   const [activeCat,   setActiveCat]   = useState('Todo');
@@ -238,7 +237,7 @@ const make_s = (colors: ThemeColors) => StyleSheet.create({
     borderRadius: 20, backgroundColor: colors.inputBg,
     borderWidth: 1.5, borderColor: colors.border,
   },
-  catChipActive:    { backgroundColor: colors.ink, borderColor: colors.ink },
+  catChipActive:    { backgroundColor: colors.hero, borderColor: colors.hero },
   catChipText:      { fontSize: 13, fontWeight: '600', color: colors.muted },
   catChipTextActive:{ color: '#fff' },
 
@@ -275,13 +274,13 @@ const make_s = (colors: ThemeColors) => StyleSheet.create({
   productPrice:  { fontSize: 14, fontWeight: '700', color: colors.ink },
   addBtn: {
     width: 28, height: 28, borderRadius: 14,
-    backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center',
   },
   addBtnText: { fontSize: 20, color: '#fff', lineHeight: 26, fontWeight: '400' },
 
   cartBar: {
     position: 'absolute', bottom: 16, left: 14, right: 14,
-    backgroundColor: colors.ink, borderRadius: 18,
+    backgroundColor: colors.accent, borderRadius: 18,
     flexDirection: 'row', alignItems: 'center',
     paddingVertical: 14, paddingHorizontal: 14, gap: 10,
     shadowColor: '#000', shadowOffset: { width: 0, height: 6 },

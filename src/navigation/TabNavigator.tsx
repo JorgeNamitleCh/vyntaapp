@@ -80,9 +80,9 @@ const make_tab = (colors: ThemeColors) => StyleSheet.create({
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderTopWidth: 1,
-    borderTopColor: '#E5E3DC',
+    borderTopColor: colors.border,
     paddingBottom: Platform.OS === 'ios' ? 24 : 8,
     paddingTop: 10,
     paddingHorizontal: 8,

@@ -291,9 +291,9 @@ export const AddExpenseScreen = ({ navigation }: AddExpenseScreenProps) => {
                 selectedColor: colors.ink,
                 selectedTextColor: '#fff',
               },
-              [todayStr]: pendingDate !== todayStr
-                ? { marked: true, dotColor: colors.accent }
-                : undefined,
+              ...(pendingDate !== todayStr
+                ? { [todayStr]: { marked: true, dotColor: colors.accent } }
+                : {}),
             }}
             theme={calTheme}
             renderArrow={(direction: 'left' | 'right') =>

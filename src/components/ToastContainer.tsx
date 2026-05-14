@@ -59,7 +59,7 @@ const ToastCard = ({ item, onDismiss }: { item: ToastItem; onDismiss: () => void
   const cfg = CONFIG[item.type];
   const translateY = useRef(new Animated.Value(-120)).current;
   const opacity = useRef(new Animated.Value(0)).current;
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const hide = () => {
     clearTimeout(timer.current);

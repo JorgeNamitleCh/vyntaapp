@@ -67,9 +67,29 @@ export type AppStackParamList = {
   BusinessEdit: undefined;
   SwitchBusiness: undefined;
   SaleDetail: { saleId: string };
+  // Customers
+  Customers: undefined;
+  // Suppliers
+  Suppliers: undefined;
+  // Quotes
+  Quotes: undefined;
+  QuoteSelectProducts: undefined;
+  QuoteConfirmProducts: undefined;
+  QuoteDetails: undefined;
+  // Debts
+  Debts: undefined;
+  AddDebt: { type: 'receivable' | 'payable' } | undefined;
 };
 
 export type SaleDetailScreenProps = NativeStackScreenProps<AppStackParamList, 'SaleDetail'>;
+export type CustomersScreenProps = NativeStackScreenProps<AppStackParamList, 'Customers'>;
+export type SuppliersScreenProps = NativeStackScreenProps<AppStackParamList, 'Suppliers'>;
+export type QuotesScreenProps = NativeStackScreenProps<AppStackParamList, 'Quotes'>;
+export type QuoteSelectProductsScreenProps = NativeStackScreenProps<AppStackParamList, 'QuoteSelectProducts'>;
+export type QuoteConfirmProductsScreenProps = NativeStackScreenProps<AppStackParamList, 'QuoteConfirmProducts'>;
+export type QuoteDetailsScreenProps = NativeStackScreenProps<AppStackParamList, 'QuoteDetails'>;
+export type DebtsScreenProps = NativeStackScreenProps<AppStackParamList, 'Debts'>;
+export type AddDebtScreenProps = NativeStackScreenProps<AppStackParamList, 'AddDebt'>;
 
 export type RootStackParamList = {
   Auth: NavigatorScreenParams<AuthStackParamList>;

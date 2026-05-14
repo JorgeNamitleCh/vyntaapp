@@ -20,6 +20,13 @@ import { PreferencesScreen } from '../features/settings/screens/PreferencesScree
 import { HelpSupportScreen } from '../features/settings/screens/HelpSupportScreen';
 import { BusinessEditScreen } from '../features/settings/screens/BusinessEditScreen';
 import { SwitchBusinessScreen } from '../features/settings/screens/SwitchBusinessScreen';
+import { CustomersScreen } from '../features/customers/screens/CustomersScreen';
+import { SuppliersScreen } from '../features/suppliers/screens/SuppliersScreen';
+import { QuotesScreen } from '../features/quotes/screens/QuotesScreen';
+import { QuoteSelectProductsScreen } from '../features/quotes/screens/QuoteSelectProductsScreen';
+import { QuoteConfirmProductsScreen } from '../features/quotes/screens/QuoteConfirmProductsScreen';
+import { QuoteDetailsScreen } from '../features/quotes/screens/QuoteDetailsScreen';
+import { DebtsScreen } from '../features/debts/screens/DebtsScreen';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -64,5 +71,13 @@ export const AppNavigator = () => (
     <Stack.Screen name="HelpSupport"     component={HelpSupportScreen}    options={{ animation: 'slide_from_right' }} />
     <Stack.Screen name="BusinessEdit"    component={BusinessEditScreen}   options={{ animation: 'slide_from_right' }} />
     <Stack.Screen name="SwitchBusiness"  component={SwitchBusinessScreen} options={{ animation: 'slide_from_right' }} />
+    {/* New feature screens */}
+    <Stack.Screen name="Customers"       component={CustomersScreen}             options={{ animation: 'slide_from_right' }} />
+    <Stack.Screen name="Suppliers"       component={SuppliersScreen}             options={{ animation: 'slide_from_right' }} />
+    <Stack.Screen name="Quotes"          component={QuotesScreen}                options={{ animation: 'slide_from_right' }} />
+    <Stack.Screen name="QuoteSelectProducts"  component={QuoteSelectProductsScreen}   options={{ animation: 'slide_from_right' }} />
+    <Stack.Screen name="QuoteConfirmProducts" component={QuoteConfirmProductsScreen}  options={{ animation: 'slide_from_right' }} />
+    <Stack.Screen name="QuoteDetails"    component={QuoteDetailsScreen}          options={{ animation: 'slide_from_right' }} />
+    <Stack.Screen name="Debts"           component={DebtsScreen}                 options={{ animation: 'slide_from_right' }} />
   </Stack.Navigator>
 );

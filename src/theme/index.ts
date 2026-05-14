@@ -6,6 +6,7 @@ const light = {
   white:     '#FFFFFF',
   cardBg:    '#F0EEE7',   // subtle card / chip bg
   inputBg:   '#FFFFFF',
+  hero:      '#0E1614',   // always-dark bg for hero cards / primary fills
 
   // Text
   ink:       '#0E1614',   // primary text
@@ -34,6 +35,7 @@ const dark = {
   white:     '#192C21',   // "white" = dark card bg
   cardBg:    '#152318',   // slightly darker card bg
   inputBg:   '#192C21',
+  hero:      '#1E3A28',   // always-dark bg for hero cards / primary fills
 
   // Text
   ink:       '#EBF0EB',   // warm off-white
@@ -56,9 +58,28 @@ const dark = {
   green:     '#4ADE80',
 } as const;
 
-export type ThemeColors = typeof light;
-export const lightColors = light;
-export const darkColors  = dark;
+export type ThemeColors = {
+  canvas: string;
+  white: string;
+  cardBg: string;
+  inputBg: string;
+  hero: string;
+  ink: string;
+  muted: string;
+  accent: string;
+  border: string;
+  error: string;
+  danger: string;
+  red: string;
+  amber: string;
+  amberBg: string;
+  amberText: string;
+  success: string;
+  green: string;
+};
+
+export const lightColors: ThemeColors = light;
+export const darkColors: ThemeColors  = dark;
 
 export const Radius = {
   xs:   6,

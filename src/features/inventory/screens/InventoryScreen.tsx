@@ -232,7 +232,7 @@ const make_s = (colors: ThemeColors) => StyleSheet.create({
   subtitle: { fontSize: 13, color: colors.muted, marginTop: 2 },
   fab: {
     width: 40, height: 40, borderRadius: 20,
-    backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center',
     marginTop: 4,
   },
 
@@ -268,7 +268,7 @@ const make_s = (colors: ThemeColors) => StyleSheet.create({
     borderRadius: 20, borderWidth: 1.5, borderColor: colors.border,
     backgroundColor: colors.inputBg,
   },
-  chipActive:    { backgroundColor: colors.ink, borderColor: colors.ink },
+  chipActive:    { backgroundColor: colors.hero, borderColor: colors.hero },
   chipText:      { fontSize: 13, fontWeight: '600', color: colors.ink },
   chipTextActive:{ color: '#fff' },
 

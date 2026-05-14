@@ -36,7 +36,7 @@ export const useRegisterSale = (tenantId: string) => {
       paymentMethod: Sale['paymentMethod'];
       createdBy: string;
       note?: string;
-    }) => salesService.registerSale(tenantId, items, paymentMethod, createdBy, note),
+    }) => salesService.registerSale({ tenantId, items, paymentMethod, createdBy, note, subtotal: items.reduce((s, i) => s + i.subtotal, 0), total: items.reduce((s, i) => s + i.subtotal, 0) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SALES_KEY(tenantId) });
       queryClient.invalidateQueries({ queryKey: TODAY_KEY(tenantId) });

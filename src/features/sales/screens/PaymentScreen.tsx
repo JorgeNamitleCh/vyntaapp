@@ -268,7 +268,7 @@ const make_s = (colors: ThemeColors) => StyleSheet.create({
   scroll: { paddingHorizontal: 20, paddingTop: 14, gap: 20 },
 
   totalCard: {
-    backgroundColor: colors.ink, borderRadius: 20,
+    backgroundColor: colors.hero, borderRadius: 20,
     paddingVertical: 20, paddingHorizontal: 22,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
   },
@@ -294,7 +294,7 @@ const make_s = (colors: ThemeColors) => StyleSheet.create({
     width: 38, height: 38, borderRadius: 10,
     backgroundColor: colors.cardBg, alignItems: 'center', justifyContent: 'center',
   },
-  methodIconActive: { backgroundColor: colors.ink },
+  methodIconActive: { backgroundColor: colors.accent },
   methodLabel: { flex: 1, fontSize: 15, fontWeight: '500', color: colors.muted },
   methodLabelActive: { color: colors.ink, fontWeight: '700' },
   radio: {
@@ -302,8 +302,8 @@ const make_s = (colors: ThemeColors) => StyleSheet.create({
     borderWidth: 2, borderColor: colors.border,
     alignItems: 'center', justifyContent: 'center',
   },
-  radioActive: { borderColor: colors.ink },
-  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.ink },
+  radioActive: { borderColor: colors.accent },
+  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.accent },
 
   cashCard: {
     backgroundColor: colors.white, borderRadius: 16,
@@ -329,7 +329,7 @@ const make_s = (colors: ThemeColors) => StyleSheet.create({
     borderRadius: 10, borderWidth: 1.5, borderColor: colors.border,
     paddingVertical: 10, alignItems: 'center',
   },
-  quickChipActive: { backgroundColor: colors.ink, borderColor: colors.ink },
+  quickChipActive: { backgroundColor: colors.accent, borderColor: colors.accent },
   quickText: { fontSize: 14, fontWeight: '700', color: colors.ink },
   quickTextActive: { color: '#fff' },
 
