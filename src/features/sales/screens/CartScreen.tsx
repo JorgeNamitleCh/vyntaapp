@@ -1,9 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import {
-  View, TouchableOpacity, ScrollView, Image,
-  StyleSheet, SafeAreaView, StatusBar, Modal,
-  TextInput, KeyboardAvoidingView, Platform,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  StyleSheet,
+  StatusBar,
+  Modal,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import {
   ChevronLeft, Plus, Minus, Tag, User, PenLine, X, Check,

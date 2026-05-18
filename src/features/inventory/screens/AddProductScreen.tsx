@@ -1,10 +1,21 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
-  View, TextInput, TouchableOpacity, Switch, Image,
-  StyleSheet, SafeAreaView, StatusBar, ScrollView,
-  KeyboardAvoidingView, Platform, ActivityIndicator,
-  PanResponder, LayoutChangeEvent, Alert,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Switch,
+  Image,
+  StyleSheet,
+  StatusBar,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  ActivityIndicator,
+  PanResponder,
+  LayoutChangeEvent,
+  Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import {
   ChevronLeft, ChevronRight, Upload, ScanBarcode, ImageIcon, X,

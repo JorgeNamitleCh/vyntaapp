@@ -1,8 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import {
-  View, TouchableOpacity, ScrollView, TextInput,
-  StyleSheet, SafeAreaView, StatusBar, Image, ActivityIndicator,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
+  StyleSheet,
+  StatusBar,
+  Image,
+  ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { AppButton } from '../../../components/AppButton';
 import { BackButton } from '../../../components/BackButton';

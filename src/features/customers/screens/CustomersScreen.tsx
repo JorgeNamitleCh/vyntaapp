@@ -1,9 +1,16 @@
 import React, { useState, useMemo } from 'react';
 import {
-  View, TouchableOpacity, FlatList, Modal, TextInput,
-  StyleSheet, SafeAreaView, StatusBar, ActivityIndicator, Platform,
+  View,
+  TouchableOpacity,
+  FlatList,
+  Modal,
+  TextInput,
+  StyleSheet,
+  StatusBar,
+  ActivityIndicator,
+  Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import {
   ChevronLeft, Plus, Trash2, X, Search, User, BookUser,

@@ -1,8 +1,14 @@
 import React, { useEffect, useRef, useMemo, useState } from 'react';
 import {
-  View, TouchableOpacity, StyleSheet,
-  SafeAreaView, StatusBar, Animated, Share, ActivityIndicator,
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  StatusBar,
+  Animated,
+  Share,
+  ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { Card } from '../../../components/Card';
 import { Divider } from '../../../components/Divider';

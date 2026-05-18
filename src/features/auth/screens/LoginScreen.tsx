@@ -1,9 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import {
-  View, TextInput, TouchableOpacity, StyleSheet,
-  ActivityIndicator, KeyboardAvoidingView, Platform,
-  SafeAreaView, StatusBar,
+  View,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { AppButton } from '../../../components/AppButton';
 import { BackButton } from '../../../components/BackButton';
@@ -121,11 +127,13 @@ export const LoginScreen = ({ navigation }: LoginScreenProps) => {
                 : <><Text style={s.googleIcon}>G</Text><Text style={s.socialLabel}>Continuar con Google</Text></>}
             </TouchableOpacity>
             {googleError ? <Text style={s.error}>{googleError}</Text> : null}
-            <TouchableOpacity style={s.socialBtn} activeOpacity={0.7} onPress={handleAppleSignIn} disabled={isAppleLoading}>
-              {isAppleLoading
-                ? <ActivityIndicator size="small" color={colors.ink} />
-                : <><Text style={s.appleIcon}></Text><Text style={s.socialLabel}>Continuar con Apple</Text></>}
-            </TouchableOpacity>
+            {Platform.OS === 'ios' && (
+              <TouchableOpacity style={s.socialBtn} activeOpacity={0.7} onPress={handleAppleSignIn} disabled={isAppleLoading}>
+                {isAppleLoading
+                  ? <ActivityIndicator size="small" color={colors.ink} />
+                  : <><Text style={s.appleIcon}></Text><Text style={s.socialLabel}>Continuar con Apple</Text></>}
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 

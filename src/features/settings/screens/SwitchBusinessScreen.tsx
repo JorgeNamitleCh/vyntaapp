@@ -1,8 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import {
-  View, TouchableOpacity, FlatList, Modal,
-  StyleSheet, SafeAreaView, StatusBar,
+  View,
+  TouchableOpacity,
+  FlatList,
+  Modal,
+  StyleSheet,
+  StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { ChevronLeft, Check, Plus, Crown, X } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';

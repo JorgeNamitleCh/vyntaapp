@@ -4,6 +4,7 @@ import appleAuth from '@invertase/react-native-apple-authentication';
 import { IAuthRepository, AuthCredential } from '../interfaces/IAuthRepository';
 
 GoogleSignin.configure({
+  webClientId: '31919809319-lp6loqs4h8e5e6o753gu05vfpsv2lth8.apps.googleusercontent.com',
   iosClientId: '31919809319-osd5om4pg0t1l96nkajeg7koqssglcih.apps.googleusercontent.com',
 });
 

@@ -1,8 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import {
-  View, TouchableOpacity, FlatList,
-  StyleSheet, SafeAreaView, StatusBar, RefreshControl,
+  View,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  StatusBar,
+  RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import {
   ChevronLeft, ChevronRight, Plus, TrendingUp, TrendingDown,

@@ -1,8 +1,12 @@
 import React, { useEffect, useMemo } from 'react';
 import {
-  View, TouchableOpacity, FlatList,
-  StyleSheet, SafeAreaView, StatusBar,
+  View,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { ChevronLeft, TrendingUp, Package, BarChart2, Bell } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';

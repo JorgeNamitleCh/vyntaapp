@@ -1,8 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import {
-  View, TouchableOpacity, ScrollView,
-  StyleSheet, SafeAreaView, StatusBar, Dimensions, RefreshControl, ActivityIndicator,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  StatusBar,
+  Dimensions,
+  RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { TrendingUp, TrendingDown } from 'lucide-react-native';
 import Svg, {

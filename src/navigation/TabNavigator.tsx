@@ -11,6 +11,7 @@ import { InventoryNavigator } from './InventoryNavigator';
 import { ExpensesNavigator } from './ExpensesNavigator';
 import { ReportsScreen } from '../features/reports/screens/ReportsScreen';
 import { useThemeColors, ThemeColors } from '../theme/ThemeContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator<AppTabParamList>();
 
@@ -36,7 +37,8 @@ const Placeholder = ({ name }: { name: string }) => (
 
 const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
   const colors = useThemeColors();
-  const tab = useMemo(() => make_tab(colors), [colors]);
+  const { bottom } = useSafeAreaInsets();
+  const tab = useMemo(() => make_tab(colors, bottom), [colors, bottom]);
   const stackNav = navigation.getParent<NativeStackNavigationProp<AppStackParamList>>();
   const left = state.routes.slice(0, 2);
   const right = state.routes.slice(2);
@@ -76,14 +78,14 @@ const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
   );
 };
 
-const make_tab = (colors: ThemeColors) => StyleSheet.create({
+const make_tab = (colors: ThemeColors, bottomInset: number) => StyleSheet.create({
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.white,
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    paddingBottom: Platform.OS === 'ios' ? 24 : 8,
+    paddingBottom: Platform.OS === 'ios' ? 24 : bottomInset + 8,
     paddingTop: 10,
     paddingHorizontal: 8,
   },

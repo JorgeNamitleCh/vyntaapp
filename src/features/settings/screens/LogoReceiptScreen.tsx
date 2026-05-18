@@ -1,9 +1,16 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import {
-  View, TouchableOpacity, ScrollView, TextInput,
-  StyleSheet, SafeAreaView, StatusBar, ActivityIndicator, Image,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
+  StyleSheet,
+  StatusBar,
+  ActivityIndicator,
+  Image,
   Switch,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { ChevronLeft, ImageIcon, Camera, X } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';

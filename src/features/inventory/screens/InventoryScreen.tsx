@@ -1,8 +1,16 @@
 import React, { useState, useMemo } from 'react';
 import {
-  View, TouchableOpacity, TextInput, FlatList, Image,
-  StyleSheet, SafeAreaView, StatusBar, ScrollView, ActivityIndicator,
+  View,
+  TouchableOpacity,
+  TextInput,
+  FlatList,
+  Image,
+  StyleSheet,
+  StatusBar,
+  ScrollView,
+  ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { Search, ScanBarcode, Plus, SlidersHorizontal } from 'lucide-react-native';
 import { InventoryListScreenProps } from '../../../navigation/types';

@@ -1,9 +1,15 @@
 import React, { useState, useMemo, useRef } from 'react';
 import {
-  View, TouchableOpacity, FlatList, Image,
-  StyleSheet, SafeAreaView, StatusBar,
-  TextInput, ActivityIndicator,
+  View,
+  TouchableOpacity,
+  FlatList,
+  Image,
+  StyleSheet,
+  StatusBar,
+  TextInput,
+  ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { ChevronLeft, Search, ScanLine, ChevronRight, X } from 'lucide-react-native';
 import { POSScreenProps } from '../../../navigation/types';

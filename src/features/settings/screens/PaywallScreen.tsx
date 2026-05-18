@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import {
-  View, TouchableOpacity, ScrollView,
-  StyleSheet, SafeAreaView, StatusBar,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { X, Crown, Check } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';

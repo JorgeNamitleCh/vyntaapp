@@ -7,9 +7,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  SafeAreaView,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { Coffee, ShoppingBag, Flame, Sparkles, Tag, Package, ChevronLeft, ChevronDown } from 'lucide-react-native';
 import { authService } from '../../auth/services/auth.service';

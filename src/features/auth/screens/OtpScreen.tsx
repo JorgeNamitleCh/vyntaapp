@@ -1,9 +1,15 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
-  View, TextInput, TouchableOpacity, StyleSheet,
-  ActivityIndicator, KeyboardAvoidingView, Platform,
-  SafeAreaView, StatusBar,
+  View,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { AppButton } from '../../../components/AppButton';
 import { BackButton } from '../../../components/BackButton';

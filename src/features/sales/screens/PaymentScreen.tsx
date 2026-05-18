@@ -1,8 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import {
-  View, TouchableOpacity, ScrollView, TextInput,
-  StyleSheet, SafeAreaView, StatusBar, Alert, ActivityIndicator,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
+  StyleSheet,
+  StatusBar,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import {
   ChevronLeft, Banknote, CreditCard, ArrowLeftRight, QrCode,

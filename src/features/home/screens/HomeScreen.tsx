@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import {
   View, TouchableOpacity, ScrollView, RefreshControl, Image,
-  StyleSheet, SafeAreaView, StatusBar, ActivityIndicator,
+  StyleSheet, StatusBar, ActivityIndicator,
   Modal, TextInput, KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../../navigation/types';

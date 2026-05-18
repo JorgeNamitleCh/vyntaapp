@@ -1,9 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import {
-  View, TouchableOpacity, FlatList, Modal,
-  TextInput, StyleSheet, SafeAreaView, StatusBar, ActivityIndicator,
+  View,
+  TouchableOpacity,
+  FlatList,
+  Modal,
+  TextInput,
+  StyleSheet,
+  StatusBar,
+  ActivityIndicator,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { ChevronLeft, Plus, Trash2, X, BookUser } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';

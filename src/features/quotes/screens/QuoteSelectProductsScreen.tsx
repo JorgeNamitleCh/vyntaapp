@@ -1,8 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import {
-  View, TouchableOpacity, FlatList, TextInput, Image,
-  StyleSheet, SafeAreaView, StatusBar, ActivityIndicator,
+  View,
+  TouchableOpacity,
+  FlatList,
+  TextInput,
+  Image,
+  StyleSheet,
+  StatusBar,
+  ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { ChevronLeft, Search, Plus, Minus, ChevronRight, Info } from 'lucide-react-native';
 import { useThemeColors, ThemeColors } from '../../../theme/ThemeContext';

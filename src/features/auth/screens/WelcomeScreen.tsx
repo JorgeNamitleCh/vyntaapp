@@ -1,5 +1,11 @@
 import React, { useMemo } from 'react';
-import { View, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  StatusBar,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { AppButton } from '../../../components/AppButton';
 import { Zap } from 'lucide-react-native';

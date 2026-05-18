@@ -1,8 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import {
-  View, TouchableOpacity, Switch, ScrollView,
-  StyleSheet, SafeAreaView, StatusBar,
+  View,
+  TouchableOpacity,
+  Switch,
+  ScrollView,
+  StyleSheet,
+  StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../../components/Text';
 import { BackButton } from '../../../components/BackButton';
 import { Card } from '../../../components/Card';
