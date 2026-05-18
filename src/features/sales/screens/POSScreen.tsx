@@ -84,7 +84,7 @@ export const POSScreen = ({ navigation }: POSScreenProps) => {
         <View style={s.productInfo}>
           <Text style={s.productName} numberOfLines={1}>{item.name}</Text>
           <View style={s.productFooter}>
-            <Text style={s.productPrice}>${item.price.toLocaleString('es-MX')}</Text>
+            <Text style={s.productPrice}>${item.price.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
             <TouchableOpacity
               style={s.addBtn}
               onPress={() => addItem({ id: item.id, name: item.name, price: item.price, color, imageUrl: item.imageUrl })}
@@ -190,7 +190,7 @@ export const POSScreen = ({ navigation }: POSScreenProps) => {
             <Text style={s.cartTitle}>VER CARRITO</Text>
             <Text style={s.cartSub}>{totalQty} producto{totalQty !== 1 ? 's' : ''}</Text>
           </View>
-          <Text style={s.cartTotal}>${totalAmt.toLocaleString('es-MX')}</Text>
+          <Text style={s.cartTotal}>${totalAmt.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
           <ChevronRight size={18} color="#fff" strokeWidth={2.5} />
         </TouchableOpacity>
       )}

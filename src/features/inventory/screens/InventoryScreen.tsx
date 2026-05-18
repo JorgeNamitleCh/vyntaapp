@@ -61,7 +61,7 @@ const ProductRow = ({ item, onPress }: { item: Product; onPress: () => void }) =
         <Text style={row.sku}>{item.sku ?? item.category ?? ''}</Text>
       </View>
       <View style={row.right}>
-        <Text style={row.price}>${item.price.toLocaleString('es-MX')}</Text>
+        <Text style={row.price}>${item.price.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
         <Text style={[row.stock, { color: stockColor }]}>{stockLabel}</Text>
       </View>
     </TouchableOpacity>

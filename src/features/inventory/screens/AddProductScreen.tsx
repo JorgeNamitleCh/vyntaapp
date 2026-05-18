@@ -21,6 +21,22 @@ import { useThemeColors, ThemeColors } from '../../../theme/ThemeContext';
 
 const ALERT_MAX = 200;
 
+const fmtCommas = (raw: string): string => {
+  if (!raw) return '';
+  const [int, dec] = raw.split('.');
+  const formatted = int.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return dec !== undefined ? `${formatted}.${dec}` : formatted;
+};
+
+const handleMoneyChange = (text: string, setter: (v: string) => void) => {
+  const clean = text.replace(/,/g, '').replace(/[^0-9.]/g, '');
+  const firstDot = clean.indexOf('.');
+  const normalized = firstDot >= 0
+    ? clean.slice(0, firstDot + 1) + clean.slice(firstDot + 1).replace(/\./g, '')
+    : clean;
+  setter(normalized);
+};
+
 const MarginBar = ({ pct }: { pct: number }) => {
   const colors = useThemeColors();
   const mb = useMemo(() => make_mb(colors), [colors]);
@@ -204,7 +220,7 @@ export const AddProductScreen = ({ navigation, route }: AddProductScreenProps) =
 
       toast.success(
         isEditing ? 'Producto actualizado' : 'Producto guardado',
-        `${name.trim()} · $${salePriceNum.toFixed(2)}`,
+        `${name.trim()} · $${fmtCommas(salePriceNum.toFixed(2))}`,
       );
       navigation.goBack();
     } catch (e: any) {
@@ -285,13 +301,13 @@ export const AddProductScreen = ({ navigation, route }: AddProductScreenProps) =
           </View>
 
           <View style={s.card}>
-            <FieldRow label="Nombre"           value={name}     onChangeText={setName}     placeholder="Cappuccino" />
+            <FieldRow label="Nombre"           value={name}     onChangeText={setName}     placeholder="Ej. Producto estrella" />
             <View style={s.divider} />
-            <FieldRow label="Categoría"        value={category} onChangeText={setCategory} placeholder="Bebidas" />
+            <FieldRow label="Categoría"        value={category} onChangeText={setCategory} placeholder="Ej. General" />
             <View style={s.divider} />
-            <FieldRow label="SKU"              value={sku}      onChangeText={setSku}      placeholder="CAF-CAP-001" />
+            <FieldRow label="SKU"              value={sku}      onChangeText={setSku}      placeholder="Ej. PROD-001" />
             <View style={s.divider} />
-            <FieldRow label="Código de barras" value={barcode}  onChangeText={setBarcode}  placeholder="7501234567890" keyboardType="number-pad" />
+            <FieldRow label="Código de barras" value={barcode}  onChangeText={setBarcode}  placeholder="Ej. 0000000000000" keyboardType="number-pad" />
           </View>
 
           <View style={s.sectionHeader}>
@@ -306,8 +322,8 @@ export const AddProductScreen = ({ navigation, route }: AddProductScreenProps) =
                   <Text style={s.priceCurrency}>$</Text>
                   <TextInput
                     style={s.priceInput}
-                    value={salePrice}
-                    onChangeText={setSalePrice}
+                    value={fmtCommas(salePrice)}
+                    onChangeText={t => handleMoneyChange(t, setSalePrice)}
                     placeholder="0.00"
                     placeholderTextColor={colors.muted}
                     keyboardType="decimal-pad"
@@ -320,8 +336,8 @@ export const AddProductScreen = ({ navigation, route }: AddProductScreenProps) =
                   <Text style={s.priceCurrency}>$</Text>
                   <TextInput
                     style={s.priceInput}
-                    value={cost}
-                    onChangeText={setCost}
+                    value={fmtCommas(cost)}
+                    onChangeText={t => handleMoneyChange(t, setCost)}
                     placeholder="0.00"
                     placeholderTextColor={colors.muted}
                     keyboardType="decimal-pad"
@@ -334,7 +350,7 @@ export const AddProductScreen = ({ navigation, route }: AddProductScreenProps) =
               <View style={s.gainRow}>
                 <Text style={s.gainLabel}>GANANCIA</Text>
                 <View style={s.gainValues}>
-                  <Text style={s.gainAmount}>${gain.toFixed(2)}</Text>
+                  <Text style={s.gainAmount}>${fmtCommas(gain.toFixed(2))}</Text>
                   <Text style={s.gainPct}>{marginPct}% margen</Text>
                 </View>
                 <MarginBar pct={marginPct} />

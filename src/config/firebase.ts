@@ -24,4 +24,5 @@ export const TENANT_COLLECTIONS = {
   SUPPLIERS: 'suppliers',
   QUOTES: 'quotes',
   DEBTS: 'debts',
+  NOTIFICATIONS: 'notifications',
 } as const;

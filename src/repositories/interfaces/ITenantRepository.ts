@@ -11,7 +11,7 @@ export interface CreateTenantParams {
   currency?: string;
 }
 
-export type UpdateTenantParams = Partial<Pick<Tenant, 'name' | 'businessType' | 'logoUrl'>>;
+export type UpdateTenantParams = Partial<Pick<Tenant, 'name' | 'businessType' | 'logoUrl' | 'showPhone' | 'showAddress' | 'receiptFooter'>>;
 
 export interface ITenantRepository {
   createTenantAndUser(params: CreateTenantParams): Promise<{ tenant: Tenant; user: User }>;

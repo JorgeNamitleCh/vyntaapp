@@ -23,10 +23,15 @@ export const useEmployees = () => {
     await employeeService.createEmployee(tenantId, data);
   };
 
+  const updateEmployee = async (employeeId: string, data: { name: string; phone?: string; role: import('../../../types').EmployeeRole }) => {
+    if (!tenantId) return;
+    await employeeService.updateEmployee(tenantId, employeeId, data);
+  };
+
   const removeEmployee = async (employeeId: string) => {
     if (!tenantId) return;
     await employeeService.deleteEmployee(tenantId, employeeId);
   };
 
-  return { employees, isLoading, addEmployee, removeEmployee };
+  return { employees, isLoading, addEmployee, updateEmployee, removeEmployee };
 };

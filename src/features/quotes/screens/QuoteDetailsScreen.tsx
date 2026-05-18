@@ -242,7 +242,7 @@ export const QuoteDetailsScreen = ({ navigation }: QuoteDetailsScreenProps) => {
             <Text style={s.discountEq}>=</Text>
             <View style={[s.discountField, { flex: 1.5 }]}>
               <Text style={s.discountPrefix}>$</Text>
-              <Text style={s.discountAmountText}>{discountAmount.toFixed(2)}</Text>
+              <Text style={s.discountAmountText}>{discountAmount.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
             </View>
           </View>
         </View>

@@ -22,6 +22,19 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.georgeenami.vynta</string>
+				<string>app-1-31919809319-ios-f307598740ecf313f1ff02</string>
+				<string>com.googleusercontent.apps.31919809319-osd5om4pg0t1l96nkajeg7koqssglcih</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -33,16 +46,18 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
 	<key>NSContactsUsageDescription</key>
 	<string>Importa clientes y empleados desde tus contactos</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Selecciona una foto para tu producto</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Guarda fotos de tus productos</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Selecciona una foto para tu producto</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -55,28 +70,10 @@
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>remote-notification</string>
-	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.georgeenami.vynta</string>
-				<string>app-1-31919809319-ios-f307598740ecf313f1ff02</string>
-			</array>
-		</dict>
-	</array>
 </dict>
 </plist>

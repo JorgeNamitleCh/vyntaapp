@@ -9,6 +9,7 @@ import { AppButton } from '../../../components/AppButton';
 import { BackButton } from '../../../components/BackButton';
 import { ChevronDown } from 'lucide-react-native';
 import { useAuth } from '../hooks/useAuth';
+import { authService } from '../services/auth.service';
 import { LoginScreenProps } from '../../../navigation/types';
 import { Radius } from '../../../theme';
 import { useThemeColors, ThemeColors } from '../../../theme/ThemeContext';
@@ -18,7 +19,35 @@ export const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const s = useMemo(() => makeStyles(colors), [colors]);
 
   const [phone, setPhone] = useState('');
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [googleError, setGoogleError] = useState<string | null>(null);
+  const [isAppleLoading, setIsAppleLoading] = useState(false);
   const { sendOtp, isSending, error } = useAuth();
+
+  const handleAppleSignIn = async () => {
+    setIsAppleLoading(true);
+    try {
+      await authService.signInWithApple();
+    } catch (e: any) {
+      if (e?.code !== 'ERR_REQUEST_CANCELED') {
+        setGoogleError(e?.message ?? 'Error al iniciar con Apple');
+      }
+    } finally {
+      setIsAppleLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setGoogleError(null);
+    setIsGoogleLoading(true);
+    try {
+      await authService.signInWithGoogle();
+    } catch (e: any) {
+      setGoogleError(e?.message ?? 'Error al iniciar con Google');
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
 
   const handleContinue = async () => {
     const digits = phone.replace(/\D/g, '');
@@ -86,13 +115,16 @@ export const LoginScreen = ({ navigation }: LoginScreenProps) => {
           </View>
 
           <View style={s.socialStack}>
-            <TouchableOpacity style={s.socialBtn} activeOpacity={0.7}>
-              <Text style={s.googleIcon}>G</Text>
-              <Text style={s.socialLabel}>Continuar con Google</Text>
+            <TouchableOpacity style={s.socialBtn} activeOpacity={0.7} onPress={handleGoogleSignIn} disabled={isGoogleLoading}>
+              {isGoogleLoading
+                ? <ActivityIndicator size="small" color={colors.ink} />
+                : <><Text style={s.googleIcon}>G</Text><Text style={s.socialLabel}>Continuar con Google</Text></>}
             </TouchableOpacity>
-            <TouchableOpacity style={s.socialBtn} activeOpacity={0.7}>
-              <Text style={s.appleIcon}></Text>
-              <Text style={s.socialLabel}>Continuar con Apple</Text>
+            {googleError ? <Text style={s.error}>{googleError}</Text> : null}
+            <TouchableOpacity style={s.socialBtn} activeOpacity={0.7} onPress={handleAppleSignIn} disabled={isAppleLoading}>
+              {isAppleLoading
+                ? <ActivityIndicator size="small" color={colors.ink} />
+                : <><Text style={s.appleIcon}></Text><Text style={s.socialLabel}>Continuar con Apple</Text></>}
             </TouchableOpacity>
           </View>
         </View>

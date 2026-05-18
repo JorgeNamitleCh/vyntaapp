@@ -107,7 +107,7 @@ const ProductRow = ({ p, rank }: { p: { name: string; revenue: number; units: nu
       <View style={pr.info}>
         <View style={pr.top}>
           <Text style={pr.name} numberOfLines={1}>{p.name}</Text>
-          <Text style={pr.revenue}>${p.revenue.toLocaleString('es-MX')}</Text>
+          <Text style={pr.revenue}>${p.revenue.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
         </View>
         <View style={pr.barBg}>
           <View style={[pr.barFill, { width: `${p.barPct * 100}%` }]} />
@@ -150,7 +150,7 @@ export const ReportsScreen = () => {
   const [period, setPeriod] = useState<Period>('Semana');
   const { data, isLoading, refresh } = useReports(period);
 
-  const fmtMoney = (n: number) => `$${n.toLocaleString('es-MX', { minimumFractionDigits: 0 })}`;
+  const fmtMoney = (n: number) => `$${n.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
     <SafeAreaView style={s.root}>

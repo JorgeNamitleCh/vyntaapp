@@ -78,7 +78,7 @@ const Legend = ({ totals }: { totals: Record<string, number> }) => {
             <View key={cat} style={legend.item}>
               <View style={[legend.dot, { backgroundColor: catColor(cat) }]} />
               <Text style={legend.cat}>{catLabel(cat)}</Text>
-              <Text style={legend.val}>${val.toLocaleString('es-MX')}</Text>
+              <Text style={legend.val}>${val.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
             </View>
           ))}
         </View>
@@ -118,7 +118,7 @@ const ExpenseRow = ({ item }: { item: Expense }) => {
           <Text style={row.date}>· hace {relativeDate(item.createdAt)}</Text>
         </View>
       </View>
-      <Text style={row.amount}>−${item.amount.toLocaleString('es-MX')}</Text>
+      <Text style={row.amount}>−${item.amount.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
     </TouchableOpacity>
   );
 };
@@ -174,7 +174,7 @@ export const ExpensesScreen = ({ navigation }: ExpensesListScreenProps) => {
       <View style={s.header}>
         <View>
           <Text style={s.title}>Gastos</Text>
-          <Text style={s.subtitle}>{monthShort} · ${grandTotal.toLocaleString('es-MX')} total</Text>
+          <Text style={s.subtitle}>{monthShort} · ${grandTotal.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} total</Text>
         </View>
         <TouchableOpacity style={s.fab} onPress={() => navigation.navigate('AddExpense')}>
           <Plus size={22} color="#fff" strokeWidth={2.5} />

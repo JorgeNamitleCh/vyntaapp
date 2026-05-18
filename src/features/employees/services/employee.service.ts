@@ -8,6 +8,10 @@ export const employeeService = {
     return repo.create(tenantId, { ...data, createdAt: new Date() });
   },
 
+  async updateEmployee(tenantId: string, employeeId: string, data: { name: string; phone?: string; role: EmployeeRole }): Promise<void> {
+    return repo.update(tenantId, employeeId, data);
+  },
+
   async deleteEmployee(tenantId: string, employeeId: string): Promise<void> {
     return repo.delete(tenantId, employeeId);
   },

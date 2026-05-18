@@ -19,7 +19,6 @@ import {
   ArrowLeftRight,
   QrCode,
 } from 'lucide-react-native';
-import { authService } from '../../auth/services/auth.service';
 import { useCreateBusiness } from '../hooks/useCreateBusiness';
 import { BusinessSetupScreenProps } from '../../../navigation/types';
 import { VatMode } from '../../../types';
@@ -112,9 +111,7 @@ export const BusinessSetupScreen = ({ navigation, route }: BusinessSetupScreenPr
           <View style={styles.dot} />
           <View style={[styles.dot, styles.dotActive]} />
         </View>
-        <TouchableOpacity onPress={() => authService.signOut()}>
-          <Text style={styles.skipText}>Saltar</Text>
-        </TouchableOpacity>
+        <View style={{ width: 38 }} />
       </View>
 
       <ScrollView

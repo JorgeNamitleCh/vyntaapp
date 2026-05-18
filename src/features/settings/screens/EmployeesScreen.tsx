@@ -29,13 +29,13 @@ const ROLE_COLORS: Record<EmployeeRole, { bg: string; text: string }> = {
 
 const ROLES: EmployeeRole[] = ['Admin', 'Cashier', 'Inventory'];
 
-const EmployeeRow = ({ name, phone, role, onDelete }: { name: string; phone?: string; role: EmployeeRole; onDelete: () => void }) => {
+const EmployeeRow = ({ name, phone, role, onEdit, onDelete }: { name: string; phone?: string; role: EmployeeRole; onEdit: () => void; onDelete: () => void }) => {
   const colors = useThemeColors();
   const card = useMemo(() => make_card(colors), [colors]);
   const initials   = name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
   const roleColors = ROLE_COLORS[role];
   return (
-    <View style={card.wrap}>
+    <TouchableOpacity style={card.wrap} onPress={onEdit} activeOpacity={0.75}>
       <View style={card.avatar}><Text style={card.avatarText}>{initials}</Text></View>
       <View style={card.info}>
         <Text style={card.name}>{name}</Text>
@@ -47,7 +47,7 @@ const EmployeeRow = ({ name, phone, role, onDelete }: { name: string; phone?: st
       <TouchableOpacity onPress={onDelete} hitSlop={12} activeOpacity={0.7}>
         <Trash2 size={16} color={colors.muted} strokeWidth={1.75} />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -68,16 +68,31 @@ export const EmployeesScreen = ({ navigation }: Props) => {
   const s = useMemo(() => make_s(colors), [colors]);
   const modal = useMemo(() => make_modal(colors), [colors]);
 
-  const { employees, isLoading, addEmployee, removeEmployee } = useEmployees();
+  const { employees, isLoading, addEmployee, updateEmployee, removeEmployee } = useEmployees();
   const { contacts, isLoading: loadingContacts, openPicker } = useContactPicker();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [contactPickerVisible, setContactPickerVisible] = useState(false);
   const [contactSearch, setContactSearch] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [newName, setNewName]   = useState('');
   const [newPhone, setNewPhone] = useState('');
   const [newRole, setNewRole]   = useState<EmployeeRole>('Cashier');
   const [isSaving, setIsSaving] = useState(false);
+
+  const openAdd = () => {
+    setEditingId(null);
+    setNewName(''); setNewPhone(''); setNewRole('Cashier');
+    setModalVisible(true);
+  };
+
+  const openEdit = (emp: { id: string; name: string; phone?: string; role: EmployeeRole }) => {
+    setEditingId(emp.id);
+    setNewName(emp.name);
+    setNewPhone(emp.phone ?? '');
+    setNewRole(emp.role);
+    setModalVisible(true);
+  };
 
   const openContactImport = async () => {
     const ok = await openPicker();
@@ -94,11 +109,17 @@ export const EmployeesScreen = ({ navigation }: Props) => {
     }
   };
 
-  const handleInvite = async () => {
+  const handleSave = async () => {
     if (!newName.trim()) return;
     setIsSaving(true);
     try {
-      await addEmployee({ name: newName.trim(), phone: newPhone.trim() || undefined, role: newRole });
+      const data = { name: newName.trim(), phone: newPhone.trim() || undefined, role: newRole };
+      if (editingId) {
+        await updateEmployee(editingId, data);
+      } else {
+        await addEmployee(data);
+      }
+      setEditingId(null);
       setNewName(''); setNewPhone(''); setNewRole('Cashier');
       setModalVisible(false);
     } finally {
@@ -120,7 +141,7 @@ export const EmployeesScreen = ({ navigation }: Props) => {
         <TouchableOpacity style={s.contactBtn} onPress={openContactImport} activeOpacity={0.8}>
           <BookUser size={18} color={colors.accent} strokeWidth={1.75} />
         </TouchableOpacity>
-        <TouchableOpacity style={s.addBtn} onPress={() => setModalVisible(true)} activeOpacity={0.8}>
+        <TouchableOpacity style={s.addBtn} onPress={openAdd} activeOpacity={0.8}>
           <Plus size={18} color="#fff" strokeWidth={2.5} />
         </TouchableOpacity>
       </View>
@@ -138,11 +159,12 @@ export const EmployeesScreen = ({ navigation }: Props) => {
               name={item.name}
               phone={item.phone}
               role={item.role}
+              onEdit={() => openEdit(item)}
               onDelete={() => removeEmployee(item.id)}
             />
           )}
           ListFooterComponent={
-            <TouchableOpacity style={s.inviteRow} onPress={() => setModalVisible(true)} activeOpacity={0.8}>
+            <TouchableOpacity style={s.inviteRow} onPress={openAdd} activeOpacity={0.8}>
               <Plus size={16} color={colors.accent} strokeWidth={2.5} />
               <Text style={s.inviteText}>Invitar empleado</Text>
             </TouchableOpacity>
@@ -150,13 +172,13 @@ export const EmployeesScreen = ({ navigation }: Props) => {
         />
       )}
 
-      <Modal visible={modalVisible} transparent animationType="slide">
+      <Modal visible={modalVisible} transparent animationType="slide" onRequestClose={() => setModalVisible(false)}>
         <View style={modal.overlay}>
           <SafeAreaView style={modal.sheetSafe}>
             <View style={modal.sheet}>
               <View style={modal.handle} />
               <View style={modal.header}>
-                <Text style={modal.title}>Invitar empleado</Text>
+                <Text style={modal.title}>{editingId ? 'Editar empleado' : 'Invitar empleado'}</Text>
                 <TouchableOpacity onPress={() => setModalVisible(false)}>
                   <X size={20} color={colors.ink} strokeWidth={2} />
                 </TouchableOpacity>
@@ -185,19 +207,21 @@ export const EmployeesScreen = ({ navigation }: Props) => {
                   ))}
                 </View>
               </View>
-              <TouchableOpacity
-                style={modal.importBtn}
-                onPress={() => { setModalVisible(false); openContactImport(); }}
-                activeOpacity={0.75}>
-                <BookUser size={16} color={colors.accent} strokeWidth={1.75} />
-                <Text style={modal.importText}>Importar desde contactos</Text>
-              </TouchableOpacity>
+              {!editingId && (
+                <TouchableOpacity
+                  style={modal.importBtn}
+                  onPress={() => { setModalVisible(false); openContactImport(); }}
+                  activeOpacity={0.75}>
+                  <BookUser size={16} color={colors.accent} strokeWidth={1.75} />
+                  <Text style={modal.importText}>Importar desde contactos</Text>
+                </TouchableOpacity>
+              )}
               <TouchableOpacity
                 style={[modal.submitBtn, (!newName.trim() || isSaving) && { opacity: 0.5 }]}
-                onPress={handleInvite}
+                onPress={handleSave}
                 disabled={!newName.trim() || isSaving}
                 activeOpacity={0.85}>
-                <Text style={modal.submitText}>{isSaving ? 'Guardando...' : 'Guardar empleado'}</Text>
+                <Text style={modal.submitText}>{isSaving ? 'Guardando...' : editingId ? 'Actualizar empleado' : 'Guardar empleado'}</Text>
               </TouchableOpacity>
             </View>
           </SafeAreaView>

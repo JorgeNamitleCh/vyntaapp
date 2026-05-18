@@ -58,7 +58,7 @@ export const SaleSuccessScreen = ({ navigation, route }: SaleSuccessScreenProps)
     ]).start();
   }, []);
 
-  const [whole, cents] = total.toFixed(2).split('.');
+  const [whole, cents] = total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split('.');
 
   const receiptData: ReceiptData = {
     businessName: tenant?.name ?? 'Mi negocio',

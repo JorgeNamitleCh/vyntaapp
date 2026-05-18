@@ -67,9 +67,7 @@ export const CreateBusinessScreen = ({ navigation }: CreateBusinessScreenProps) 
             <View style={styles.dot} />
             <View style={styles.dot} />
           </View>
-          <TouchableOpacity onPress={() => authService.signOut()}>
-            <Text style={styles.skipText}>Saltar</Text>
-          </TouchableOpacity>
+          <View style={{ width: 38 }} />
         </View>
 
         <ScrollView
@@ -88,7 +86,7 @@ export const CreateBusinessScreen = ({ navigation }: CreateBusinessScreenProps) 
             <Text style={styles.fieldLabel}>NOMBRE DEL NEGOCIO</Text>
             <TextInput
               style={styles.input}
-              placeholder="Café Nami"
+              placeholder="Mi negocio"
               placeholderTextColor={colors.muted}
               value={name}
               onChangeText={setName}

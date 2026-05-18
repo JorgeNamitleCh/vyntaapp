@@ -35,11 +35,11 @@ const SupplierRow = ({ supplier, onDelete }: { supplier: Supplier; onDelete: () 
 
 const make_row = (c: ThemeColors) => StyleSheet.create({
   wrap:       { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14 },
-  avatar:     { width: 40, height: 40, borderRadius: 20, backgroundColor: '#F59E0B', alignItems: 'center', justifyContent: 'center' },
+  avatar:     { width: 40, height: 40, borderRadius: 20, backgroundColor: c.accent, alignItems: 'center', justifyContent: 'center' },
   avatarText: { color: '#fff', fontSize: 14, fontWeight: '800' },
   info:       { flex: 1, gap: 3 },
   name:       { fontSize: 14, fontWeight: '700', color: c.ink },
-  chip:       { alignSelf: 'flex-start', fontSize: 10, fontWeight: '700', color: '#92400E', backgroundColor: '#FEF3C7', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
+  chip:       { alignSelf: 'flex-start', fontSize: 10, fontWeight: '700', color: c.amberText, backgroundColor: c.amberBg, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
   sub:        { fontSize: 12, color: c.muted },
 });
 
@@ -188,7 +188,7 @@ const make_s = (c: ThemeColors) => StyleSheet.create({
   headerText:  { flex: 1, gap: 1 },
   title:       { fontSize: 20, fontWeight: '800', color: c.ink, letterSpacing: -0.5 },
   subtitle:    { fontSize: 12, color: c.muted },
-  addBtn:      { width: 36, height: 36, borderRadius: 18, backgroundColor: '#F59E0B', alignItems: 'center', justifyContent: 'center' },
+  addBtn:      { width: 36, height: 36, borderRadius: 18, backgroundColor: c.accent, alignItems: 'center', justifyContent: 'center' },
   searchWrap:  { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 20, marginBottom: 8, backgroundColor: c.white, borderRadius: 12, borderWidth: 1.5, borderColor: c.border, paddingHorizontal: 14, paddingVertical: 11 },
   searchInput: { flex: 1, fontSize: 14, color: c.ink, padding: 0 },
   list:        { paddingHorizontal: 20, paddingVertical: 4 },
@@ -210,10 +210,10 @@ const make_m = (c: ThemeColors) => StyleSheet.create({
   input:           { backgroundColor: c.canvas, borderRadius: 12, borderWidth: 1.5, borderColor: c.border, paddingHorizontal: 14, paddingVertical: 13, fontSize: 15, color: c.ink },
   chips:           { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip:            { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 10, borderWidth: 1.5, borderColor: c.border, backgroundColor: c.canvas },
-  chipActive:      { backgroundColor: c.ink, borderColor: c.ink },
+  chipActive:      { backgroundColor: c.accent, borderColor: c.accent },
   chipText:        { fontSize: 12, fontWeight: '600', color: c.muted },
   chipTextActive:  { color: '#fff' },
-  saveBtn:         { backgroundColor: '#F59E0B', borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 8 },
+  saveBtn:         { backgroundColor: c.accent, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 8 },
   saveBtnDisabled: { opacity: 0.5 },
   saveText:        { fontSize: 16, fontWeight: '700', color: '#fff' },
 });

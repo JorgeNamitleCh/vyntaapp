@@ -1,5 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useNotificationsSync } from '../features/notifications/hooks/useNotificationsSync';
 import { AppStackParamList } from './types';
 import { TabNavigator } from './TabNavigator';
 import { POSScreen } from '../features/sales/screens/POSScreen';
@@ -30,7 +31,9 @@ import { DebtsScreen } from '../features/debts/screens/DebtsScreen';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
-export const AppNavigator = () => (
+export const AppNavigator = () => {
+  useNotificationsSync();
+  return (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Tabs" component={TabNavigator} />
     <Stack.Screen
@@ -80,4 +83,5 @@ export const AppNavigator = () => (
     <Stack.Screen name="QuoteDetails"    component={QuoteDetailsScreen}          options={{ animation: 'slide_from_right' }} />
     <Stack.Screen name="Debts"           component={DebtsScreen}                 options={{ animation: 'slide_from_right' }} />
   </Stack.Navigator>
-);
+  );
+};

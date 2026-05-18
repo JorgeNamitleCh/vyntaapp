@@ -57,7 +57,7 @@ export const useSale = () => {
       const { dailyGoal, monthlyGoal } = useGoalsStore.getState();
 
       // Cash register effect always fires
-      notificationsService.fireCashRegister(sale.total).catch(() => {});
+      notificationsService.fireCashRegister(tenant!.id, sale.total).catch(() => {});
 
       try {
         // Fetch updated totals to check goals
@@ -82,12 +82,12 @@ export const useSale = () => {
 
         // Daily goal just crossed
         if (dailyGoal && prevDay < dailyGoal && todayTotal >= dailyGoal) {
-          notificationsService.fireDailyGoalReached(todayTotal, dailyGoal).catch(() => {});
+          notificationsService.fireDailyGoalReached(tenant!.id, todayTotal, dailyGoal).catch(() => {});
         }
 
         // Monthly goal just crossed
         if (monthlyGoal && prevMonth < monthlyGoal && monthTotal >= monthlyGoal) {
-          notificationsService.fireMonthlyGoalReached(monthTotal, monthlyGoal).catch(() => {});
+          notificationsService.fireMonthlyGoalReached(tenant!.id, monthTotal, monthlyGoal).catch(() => {});
         }
       } catch {
         // Never block a successful sale due to notification errors

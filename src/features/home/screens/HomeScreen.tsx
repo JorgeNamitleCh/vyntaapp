@@ -142,7 +142,7 @@ const SaleItem = ({ sale, onPress }: { sale: Sale; onPress?: () => void }) => {
         </Text>
         <Text style={recent.ago}>hace {agoLabel(sale.createdAt)}</Text>
       </View>
-      <Text style={recent.amount}>${sale.total.toLocaleString('es-MX')}</Text>
+      <Text style={recent.amount}>${sale.total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
     </TouchableOpacity>
   );
 };
@@ -333,8 +333,8 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
           <View style={s.statsRow}>
             {[
               { label: 'TICKETS',  value: String(dash.ticketCount) },
-              { label: 'PROMEDIO', value: dash.avgTicket > 0 ? `$${dash.avgTicket.toLocaleString('es-MX')}` : '--' },
-              { label: 'EFECTIVO', value: dash.cashTotal > 0 ? `$${dash.cashTotal.toLocaleString('es-MX')}` : '--' },
+              { label: 'PROMEDIO', value: dash.avgTicket > 0 ? `$${dash.avgTicket.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '--' },
+              { label: 'EFECTIVO', value: dash.cashTotal > 0 ? `$${dash.cashTotal.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '--' },
             ].map(({ label, value }, i) => (
               <View key={label} style={[s.statItem, i > 0 && s.statBorder]}>
                 <Text style={s.statLabel}>{label}</Text>
@@ -351,7 +351,7 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
                 <View style={s.monthGoalTop}>
                   <Text style={s.monthGoalLabel}>META MES</Text>
                   <Text style={s.monthGoalValue}>
-                    ${dash.monthTotal.toLocaleString('es-MX')} / ${monthlyGoal!.toLocaleString('es-MX')}
+                    ${dash.monthTotal.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / ${monthlyGoal!.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </Text>
                 </View>
                 <View style={s.monthGoalBg}>

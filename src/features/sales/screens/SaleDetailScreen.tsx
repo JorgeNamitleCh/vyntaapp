@@ -169,9 +169,9 @@ export const SaleDetailScreen = ({ route, navigation }: SaleDetailScreenProps) =
                   )}
                   <View style={s.itemInfo}>
                     <Text style={s.itemName} numberOfLines={1}>{item.productName}</Text>
-                    <Text style={s.itemQty}>{item.quantity} × ${item.unitPrice.toLocaleString('es-MX')}</Text>
+                    <Text style={s.itemQty}>{item.quantity} × ${item.unitPrice.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
                   </View>
-                  <Text style={s.itemSubtotal}>${item.subtotal.toLocaleString('es-MX')}</Text>
+                  <Text style={s.itemSubtotal}>${item.subtotal.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
                 </View>
               </View>
             ))}
@@ -181,21 +181,21 @@ export const SaleDetailScreen = ({ route, navigation }: SaleDetailScreenProps) =
           <View style={s.totalsCard}>
             <View style={s.totalRow}>
               <Text style={s.totalLabel}>Subtotal</Text>
-              <Text style={s.totalValue}>${sale.subtotal.toLocaleString('es-MX')}</Text>
+              <Text style={s.totalValue}>${sale.subtotal.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
             </View>
             {sale.discountAmount != null && sale.discountAmount > 0 && (
               <>
                 <View style={s.divider} />
                 <View style={s.totalRow}>
                   <Text style={[s.totalLabel, { color: colors.accent }]}>Descuento</Text>
-                  <Text style={[s.totalValue, { color: colors.accent }]}>−${sale.discountAmount.toLocaleString('es-MX')}</Text>
+                  <Text style={[s.totalValue, { color: colors.accent }]}>−${sale.discountAmount.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
                 </View>
               </>
             )}
             <View style={s.divider} />
             <View style={s.totalRow}>
               <Text style={s.grandLabel}>TOTAL</Text>
-              <Text style={s.grandValue}>${sale.total.toLocaleString('es-MX')}</Text>
+              <Text style={s.grandValue}>${sale.total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
             </View>
           </View>
 

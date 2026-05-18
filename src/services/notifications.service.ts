@@ -1,3 +1,4 @@
+import { notificationRepository } from '../repositories/firebase/notification.repository';
 import notifee, {
   AndroidImportance,
   AndroidVisibility,
@@ -66,14 +67,15 @@ export const notificationsService = {
   },
 
   // ── Cash-register effect ──────────────────────────────────
-  // Call immediately after a sale is confirmed (app is in foreground)
-  async fireCashRegister(saleTotal: number): Promise<void> {
-    // Vibration works cross-platform (iOS: single pulse, Android: full pattern)
+  async fireCashRegister(tenantId: string, saleTotal: number): Promise<void> {
+    const body = `+$${saleTotal.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    notificationRepository.add(tenantId, { title: '💰 Venta registrada', body, type: 'sale' }).catch(() => {});
+
     Vibration.vibrate(Platform.OS === 'android' ? CASH_PATTERN : 400);
 
     await notifee.displayNotification({
       title: '💰 ¡Venta registrada!',
-      body:  `+$${saleTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`,
+      body,
       android: {
         channelId:       CH.sales,
         smallIcon:       'ic_notification',
@@ -95,11 +97,14 @@ export const notificationsService = {
   },
 
   // ── Goal notifications ────────────────────────────────────
-  async fireDailyGoalReached(total: number, goal: number): Promise<void> {
+  async fireDailyGoalReached(tenantId: string, total: number, goal: number): Promise<void> {
+    const body = `Superaste $${total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} en ventas hoy. ¡Meta alcanzada!`;
+    notificationRepository.add(tenantId, { title: '🎯 Meta del día alcanzada', body, type: 'sale' }).catch(() => {});
+
     Vibration.vibrate(Platform.OS === 'android' ? [0, 100, 60, 100] : 500);
     await notifee.displayNotification({
       title: '🎯 ¡Meta del día superada!',
-      body:  `Llevas $${total.toLocaleString('es-MX')} de $${goal.toLocaleString('es-MX')} en meta. ¡Sigue así!`,
+      body,
       android: { channelId: CH.goals, smallIcon: 'ic_notification', color: '#0E5C3F', pressAction: { id: 'default' } },
       ios: {
         sound: 'default',
@@ -108,11 +113,14 @@ export const notificationsService = {
     });
   },
 
-  async fireMonthlyGoalReached(total: number, goal: number): Promise<void> {
+  async fireMonthlyGoalReached(tenantId: string, total: number, goal: number): Promise<void> {
+    const body = `$${total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} este mes. Meta de $${goal.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} alcanzada.`;
+    notificationRepository.add(tenantId, { title: '🏆 Meta del mes alcanzada', body, type: 'sale' }).catch(() => {});
+
     Vibration.vibrate(Platform.OS === 'android' ? [0, 120, 60, 120, 60, 300] : 600);
     await notifee.displayNotification({
       title: '🏆 ¡Meta del mes superada!',
-      body:  `$${total.toLocaleString('es-MX')} este mes. Meta de $${goal.toLocaleString('es-MX')} alcanzada.`,
+      body,
       android: { channelId: CH.goals, smallIcon: 'ic_notification', color: '#D97706', pressAction: { id: 'default' } },
       ios: {
         sound: 'default',

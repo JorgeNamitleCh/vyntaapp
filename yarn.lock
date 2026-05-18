@@ -2088,6 +2088,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@invertase/react-native-apple-authentication@npm:^2.5.1":
+  version: 2.5.1
+  resolution: "@invertase/react-native-apple-authentication@npm:2.5.1"
+  checksum: 30d627ef12ab2daf4ccf1242a4c060653bd922da750d0f52bd6901920edad936ac640e14fff878db5e64335f64fcac2a4f0b287a52d977bd1b3481006418a531
+  languageName: node
+  linkType: hard
+
 "@isaacs/fs-minipass@npm:^4.0.0":
   version: 4.0.1
   resolution: "@isaacs/fs-minipass@npm:4.0.1"
@@ -2780,6 +2787,20 @@ __metadata:
   peerDependencies:
     "@react-native-firebase/app": 21.14.0
   checksum: f5fb4aa5ae85bae4c55ce393dbfea34b6825967513a9ca5b863b77c3cc8d5a8800a3b9066df020fd427b18e33d85e85f662e078ebbec70c0dc118dd85d986603
+  languageName: node
+  linkType: hard
+
+"@react-native-google-signin/google-signin@npm:^16.1.2":
+  version: 16.1.2
+  resolution: "@react-native-google-signin/google-signin@npm:16.1.2"
+  peerDependencies:
+    expo: ">=52.0.40"
+    react: "*"
+    react-native: "*"
+  peerDependenciesMeta:
+    expo:
+      optional: true
+  checksum: d29da95ec0136c66ffded9f7c8e40e88a609e03d0913f7a559d35942a9b05576d6b9d85a00d59e78127b507bacc8b2936735eb0c907270c9c2f81991ae26f723
   languageName: node
   linkType: hard
 
@@ -3571,6 +3592,7 @@ __metadata:
     "@babel/core": ^7.25.2
     "@babel/preset-env": ^7.25.3
     "@babel/runtime": ^7.25.0
+    "@invertase/react-native-apple-authentication": ^2.5.1
     "@notifee/react-native": ^9.1.8
     "@react-native-async-storage/async-storage": ^3.0.2
     "@react-native-community/cli": 20.1.0
@@ -3581,6 +3603,7 @@ __metadata:
     "@react-native-firebase/firestore": 21
     "@react-native-firebase/functions": 21
     "@react-native-firebase/storage": 21
+    "@react-native-google-signin/google-signin": ^16.1.2
     "@react-native/babel-preset": 0.85.2
     "@react-native/eslint-config": 0.85.2
     "@react-native/jest-preset": 0.85.2

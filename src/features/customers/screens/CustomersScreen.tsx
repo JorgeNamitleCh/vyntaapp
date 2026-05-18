@@ -112,11 +112,11 @@ const make_cp = (c: ThemeColors) => StyleSheet.create({
 
 // ─── Customer Row ─────────────────────────────────────────────────────────────
 
-const CustomerRow = ({ customer, onDelete }: { customer: Customer; onDelete: () => void }) => {
+const CustomerRow = ({ customer, onEdit, onDelete }: { customer: Customer; onEdit: () => void; onDelete: () => void }) => {
   const colors = useThemeColors();
   const s = useMemo(() => make_row(colors), [colors]);
   return (
-    <View style={s.wrap}>
+    <TouchableOpacity style={s.wrap} onPress={onEdit} activeOpacity={0.75}>
       <View style={s.avatar}>
         <Text style={s.avatarText}>{initials(customer.name)}</Text>
       </View>
@@ -128,7 +128,7 @@ const CustomerRow = ({ customer, onDelete }: { customer: Customer; onDelete: () 
       <TouchableOpacity onPress={onDelete} hitSlop={12} activeOpacity={0.7}>
         <Trash2 size={16} color={colors.muted} strokeWidth={1.75} />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -156,6 +156,7 @@ export const CustomersScreen = ({ navigation }: CustomersScreenProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [contactPickerVisible, setContactPickerVisible] = useState(false);
   const [contactSearch, setContactSearch] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -167,7 +168,16 @@ export const CustomersScreen = ({ navigation }: CustomersScreenProps) => {
     ), [customers, search]);
 
   const openManual = () => {
+    setEditingId(null);
     setName(''); setPhone(''); setEmail('');
+    setModalVisible(true);
+  };
+
+  const openEdit = (customer: Customer) => {
+    setEditingId(customer.id);
+    setName(customer.name);
+    setPhone(customer.phone ?? '');
+    setEmail(customer.email ?? '');
     setModalVisible(true);
   };
 
@@ -186,12 +196,17 @@ export const CustomersScreen = ({ navigation }: CustomersScreenProps) => {
 
   const handleSave = async () => {
     if (!name.trim()) return;
-    await save({ name: name.trim(), phone: phone.trim() || undefined, email: email.trim() || undefined });
+    await save(
+      { name: name.trim(), phone: phone.trim() || undefined, email: email.trim() || undefined },
+      editingId ?? undefined,
+    );
+    setEditingId(null);
     setName(''); setPhone(''); setEmail('');
     setModalVisible(false);
   };
 
   const closeModal = () => {
+    setEditingId(null);
     setName(''); setPhone(''); setEmail('');
     setModalVisible(false);
   };
@@ -248,7 +263,7 @@ export const CustomersScreen = ({ navigation }: CustomersScreenProps) => {
           contentContainerStyle={s.list}
           ItemSeparatorComponent={() => <View style={s.sep} />}
           renderItem={({ item }) => (
-            <CustomerRow customer={item} onDelete={() => deleteCustomer(item.id)} />
+            <CustomerRow customer={item} onEdit={() => openEdit(item)} onDelete={() => deleteCustomer(item.id)} />
           )}
           ListFooterComponent={
             <TouchableOpacity style={s.importRow} onPress={openContactImport} activeOpacity={0.8}>
@@ -266,7 +281,7 @@ export const CustomersScreen = ({ navigation }: CustomersScreenProps) => {
             <View style={m.sheet}>
               <View style={m.handle} />
               <View style={m.header}>
-                <Text style={m.title}>Nuevo cliente</Text>
+                <Text style={m.title}>{editingId ? 'Editar cliente' : 'Nuevo cliente'}</Text>
                 <TouchableOpacity onPress={closeModal}>
                   <X size={20} color={colors.ink} strokeWidth={2} />
                 </TouchableOpacity>
@@ -295,7 +310,7 @@ export const CustomersScreen = ({ navigation }: CustomersScreenProps) => {
                 onPress={handleSave}
                 disabled={!name.trim() || isSaving}
                 activeOpacity={0.85}>
-                <Text style={m.saveText}>{isSaving ? 'Guardando...' : 'Guardar cliente'}</Text>
+                <Text style={m.saveText}>{isSaving ? 'Guardando...' : editingId ? 'Actualizar cliente' : 'Guardar cliente'}</Text>
               </TouchableOpacity>
             </View>
           </SafeAreaView>

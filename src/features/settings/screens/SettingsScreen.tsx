@@ -15,6 +15,7 @@ import { useAuthStore } from '../../../store/authStore';
 import { authService } from '../../auth/services/auth.service';
 import { Radius } from '../../../theme';
 import { useThemeColors, ThemeColors } from '../../../theme/ThemeContext';
+import { usePlan } from '../../../hooks/usePlan';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'Settings'>;
 
@@ -55,6 +56,7 @@ export const SettingsScreen = ({ navigation }: Props) => {
   const s = useMemo(() => makeStyles(colors), [colors]);
 
   const { user, tenant } = useAuthStore();
+  const { plan, isFree, isPremium, label, limits } = usePlan();
 
   const businessName = tenant?.name ?? 'Mi negocio';
   const displayName  = user?.displayName ?? 'Usuario';
@@ -126,16 +128,26 @@ export const SettingsScreen = ({ navigation }: Props) => {
               <Crown size={18} color={colors.amber} strokeWidth={1.75} />
             </View>
             <View style={s.planInfo}>
-              <Text style={s.planLabel}>PLAN GRATUITO</Text>
-              <Text style={s.planSub}>23 de 50 ventas este mes</Text>
-              <View style={s.planBarBg}>
-                <View style={[s.planBarFill, { width: `${(23 / 50) * 100}%` }]} />
-              </View>
+              <Text style={s.planLabel}>{label}</Text>
+              {isFree ? (
+                <>
+                  <Text style={s.planSub}>0 de {limits.salesPerMonth} ventas este mes</Text>
+                  <View style={s.planBarBg}>
+                    <View style={[s.planBarFill, { width: '0%' }]} />
+                  </View>
+                </>
+              ) : (
+                <Text style={s.planSub}>
+                  {isPremium ? 'Hasta 3 negocios · 10 empleados' : 'Ventas ilimitadas · 3 empleados'}
+                </Text>
+              )}
             </View>
           </View>
-          <TouchableOpacity style={s.mejorarBtn} onPress={() => navigation.navigate('Paywall')} activeOpacity={0.85}>
-            <Text style={s.mejorarText}>Mejorar</Text>
-          </TouchableOpacity>
+          {!isPremium && (
+            <TouchableOpacity style={s.mejorarBtn} onPress={() => navigation.navigate('Paywall')} activeOpacity={0.85}>
+              <Text style={s.mejorarText}>{isFree ? 'Mejorar' : 'Premium'}</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <SectionLabel>NEGOCIO</SectionLabel>

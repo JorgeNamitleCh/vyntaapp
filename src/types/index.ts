@@ -7,13 +7,16 @@ export interface Tenant {
   name: string;
   ownerId: string;
   createdAt: Date;
-  plan: 'free' | 'pro';
+  plan: 'free' | 'pro' | 'premium';
   businessType?: string;
   channels?: string[];
   vatMode?: VatMode;
   paymentMethods?: string[];
   currency?: string;
   logoUrl?: string;
+  showPhone?: boolean;
+  showAddress?: boolean;
+  receiptFooter?: string;
 }
 
 export interface User {

@@ -238,7 +238,7 @@ export const PaymentScreen = ({ navigation }: PaymentScreenProps) => {
               <Text style={s.confirmText}>Confirmar pago</Text>
               <View style={s.confirmAmt}>
                 <Text style={s.confirmAmtText}>
-                  ${total.toLocaleString('es-MX')}
+                  ${total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </Text>
               </View>
             </>

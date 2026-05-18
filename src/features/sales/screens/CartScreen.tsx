@@ -154,7 +154,7 @@ export const CartScreen = ({ navigation }: CartScreenProps) => {
                     </View>
                     <View style={s.itemInfo}>
                       <Text style={s.itemName} numberOfLines={1}>{item.name}</Text>
-                      <Text style={s.itemUnit}>${item.price.toLocaleString('es-MX')} c/u</Text>
+                      <Text style={s.itemUnit}>${item.price.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} c/u</Text>
                     </View>
                     <View style={s.qtyPill}>
                       <TouchableOpacity
@@ -255,7 +255,7 @@ export const CartScreen = ({ navigation }: CartScreenProps) => {
             onPress={() => navigation.navigate('Payment')}
             activeOpacity={0.88}>
             <Text style={s.payBtnText}>
-              Cobrar ${total.toLocaleString('es-MX')}{'  '}→
+              Cobrar ${total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{'  '}→
             </Text>
           </TouchableOpacity>
         </View>

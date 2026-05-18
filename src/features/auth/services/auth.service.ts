@@ -11,6 +11,20 @@ export const authService = {
     return repository.sendOtp(phoneNumber);
   },
 
+  signInWithGoogle(): Promise<{ isNewUser: boolean }> {
+    return repository.signInWithGoogle().then(async cred => {
+      const userDoc = await firestore().collection(COLLECTIONS.USERS).doc(cred.uid).get();
+      return { isNewUser: !userDoc.exists };
+    });
+  },
+
+  signInWithApple(): Promise<{ isNewUser: boolean }> {
+    return repository.signInWithApple().then(async cred => {
+      const userDoc = await firestore().collection(COLLECTIONS.USERS).doc(cred.uid).get();
+      return { isNewUser: !userDoc.exists };
+    });
+  },
+
   async verifyOtp(verificationId: string, code: string): Promise<{ isNewUser: boolean }> {
     const cred = await repository.verifyOtp(verificationId, code);
     const userDoc = await firestore().collection(COLLECTIONS.USERS).doc(cred.uid).get();
