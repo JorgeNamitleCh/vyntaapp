@@ -19,6 +19,7 @@ import { LogoReceiptScreen } from '../features/settings/screens/LogoReceiptScree
 import { ExportDataScreen } from '../features/settings/screens/ExportDataScreen';
 import { PreferencesScreen } from '../features/settings/screens/PreferencesScreen';
 import { HelpSupportScreen } from '../features/settings/screens/HelpSupportScreen';
+import { DeleteAccountScreen } from '../features/settings/screens/DeleteAccountScreen';
 import { BusinessEditScreen } from '../features/settings/screens/BusinessEditScreen';
 import { SwitchBusinessScreen } from '../features/settings/screens/SwitchBusinessScreen';
 import { CustomersScreen } from '../features/customers/screens/CustomersScreen';
@@ -72,6 +73,7 @@ export const AppNavigator = () => {
     <Stack.Screen name="ExportData"      component={ExportDataScreen}     options={{ animation: 'slide_from_right' }} />
     <Stack.Screen name="Preferences"     component={PreferencesScreen}    options={{ animation: 'slide_from_right' }} />
     <Stack.Screen name="HelpSupport"     component={HelpSupportScreen}    options={{ animation: 'slide_from_right' }} />
+    <Stack.Screen name="DeleteAccount"   component={DeleteAccountScreen}  options={{ animation: 'slide_from_right' }} />
     <Stack.Screen name="BusinessEdit"    component={BusinessEditScreen}   options={{ animation: 'slide_from_right' }} />
     <Stack.Screen name="SwitchBusiness"  component={SwitchBusinessScreen} options={{ animation: 'slide_from_right' }} />
     {/* New feature screens */}

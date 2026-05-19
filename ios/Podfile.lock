@@ -1198,28 +1198,6 @@ PODS:
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
-  - AsyncStorage (3.0.2):
-    - hermes-engine
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-Core-prebuilt
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - Yoga
   - BoringSSL-GRPC (0.0.37):
     - BoringSSL-GRPC/Implementation (= 0.0.37)
     - BoringSSL-GRPC/Interface (= 0.0.37)
@@ -3380,6 +3358,28 @@ PODS:
   - RevenueCat (5.68.0)
   - RNAppleAuthentication (2.5.1):
     - React-Core
+  - RNCAsyncStorage (1.24.0):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - RNFBApp (21.14.0):
     - Firebase/CoreOnly (= 11.11.0)
     - React-Core
@@ -3547,7 +3547,6 @@ PODS:
   - Yoga (0.0.0)
 
 DEPENDENCIES:
-  - "AsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - Firebase
   - FirebaseAuth
@@ -3632,6 +3631,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeDependencies (from `../node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec`)
   - "RNAppleAuthentication (from `../node_modules/@invertase/react-native-apple-authentication`)"
+  - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
@@ -3683,8 +3683,6 @@ SPEC REPOS:
     - RevenueCat
 
 EXTERNAL SOURCES:
-  AsyncStorage:
-    :path: "../node_modules/@react-native-async-storage/async-storage"
   FBLazyVector:
     :path: "../node_modules/react-native/Libraries/FBLazyVector"
   hermes-engine:
@@ -3840,6 +3838,8 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec"
   RNAppleAuthentication:
     :path: "../node_modules/@invertase/react-native-apple-authentication"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-async-storage/async-storage"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBAuth:
@@ -3869,7 +3869,6 @@ SPEC CHECKSUMS:
   abseil: a05cc83bf02079535e17169a73c5be5ba47f714b
   AppAuth: 1c1a8afa7e12f2ec3a294d9882dfa5ab7d3cb063
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
-  AsyncStorage: f3314dbedd8bb08c36d5eda65883ef34c262ff64
   BoringSSL-GRPC: dded2a44897e45f28f08ae87a55ee4bcd19bc508
   FBLazyVector: 26fd21c75314e101f280d401e97f27d54f3f7064
   Firebase: 6a8f201c61eda24e98f1ce2b44b1b9c2caf525cc
@@ -3978,6 +3977,7 @@ SPEC CHECKSUMS:
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   RevenueCat: c535d3739d51163f6d9d5dbd01c7b5d93b718ff5
   RNAppleAuthentication: a89c9804592b38ed4ab11f0aee68d05ba12ad432
+  RNCAsyncStorage: 10bc74ee47a3901f6a93857367bf60ecc020a0ba
   RNFBApp: 4105e54d9ca4a1c10893a032268470f670181110
   RNFBAuth: 68dcd5fc893659b68b63646b1ff54d59001cb21a
   RNFBFirestore: 80b3fb2371c3289343766b8bb5a72a4abf4cc052
@@ -3991,6 +3991,6 @@ SPEC CHECKSUMS:
   RNVectorIcons: bd88db8836a8611aff4b44f061364c07002a6c2a
   Yoga: 7bc3d5ffbb9f3b12001659657d7a56483fcb1e3a
 
-PODFILE CHECKSUM: 19e860781eece140b2716a9120f33c32306c1ca2
+PODFILE CHECKSUM: ddd9da5e9972d6ef611fe8f6c9506069ad555394
 
 COCOAPODS: 1.16.2

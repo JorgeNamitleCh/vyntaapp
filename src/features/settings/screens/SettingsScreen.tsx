@@ -14,7 +14,7 @@ import { SectionLabel } from '../../../components/SectionLabel';
 import {
   X, ChevronRight, Store, ArrowLeftRight,
   FileText, Users, CreditCard, Tag, Image,
-  Download, Bell, Settings, Phone, Crown,
+  Download, Bell, Settings, Phone, Trash2,
 } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../../navigation/types';
@@ -22,7 +22,7 @@ import { useAuthStore } from '../../../store/authStore';
 import { authService } from '../../auth/services/auth.service';
 import { Radius } from '../../../theme';
 import { useThemeColors, ThemeColors } from '../../../theme/ThemeContext';
-import { usePlan } from '../../../hooks/usePlan';
+// import { usePlan } from '../../../hooks/usePlan'; // re-habilitar con monetización
 
 type Props = NativeStackScreenProps<AppStackParamList, 'Settings'>;
 
@@ -31,18 +31,20 @@ type RowItem = {
   sub?: string;
   Icon: any;
   onPress?: () => void;
+  danger?: boolean;
 };
 
 const SectionRow = ({ item }: { item: RowItem }) => {
   const colors = useThemeColors();
   const row = useMemo(() => makeRowStyles(colors), [colors]);
+  const tint = item.danger ? colors.error : colors.ink;
   return (
     <TouchableOpacity style={row.wrap} onPress={item.onPress} activeOpacity={0.7}>
-      <View style={row.iconWrap}>
-        <item.Icon size={18} color={colors.ink} strokeWidth={1.75} />
+      <View style={[row.iconWrap, item.danger && { backgroundColor: `${colors.error}12` }]}>
+        <item.Icon size={18} color={tint} strokeWidth={1.75} />
       </View>
       <View style={row.info}>
-        <Text style={row.label}>{item.label}</Text>
+        <Text style={[row.label, item.danger && { color: colors.error }]}>{item.label}</Text>
         {item.sub && <Text style={row.sub}>{item.sub}</Text>}
       </View>
       <ChevronRight size={16} color={colors.muted} strokeWidth={2} />
@@ -63,7 +65,8 @@ export const SettingsScreen = ({ navigation }: Props) => {
   const s = useMemo(() => makeStyles(colors), [colors]);
 
   const { user, tenant } = useAuthStore();
-  const { plan, isFree, isPremium, label, limits } = usePlan();
+  // TODO: re-habilitar cuando se active monetización
+  // const { plan, isFree, isPremium, label, limits } = usePlan();
 
   const businessName = tenant?.name ?? 'Mi negocio';
   const displayName  = user?.displayName ?? 'Usuario';
@@ -88,6 +91,7 @@ export const SettingsScreen = ({ navigation }: Props) => {
     { label: 'Notificaciones', Icon: Bell, onPress: () => navigation.navigate('Notifications') },
     { label: 'Preferencias', Icon: Settings, onPress: () => navigation.navigate('Preferences') },
     { label: 'Ayuda y soporte', Icon: Phone, onPress: () => navigation.navigate('HelpSupport') },
+    { label: 'Eliminar cuenta', Icon: Trash2, onPress: () => navigation.navigate('DeleteAccount'), danger: true },
   ];
 
   const renderSection = (items: RowItem[]) => (
@@ -128,8 +132,8 @@ export const SettingsScreen = ({ navigation }: Props) => {
           </TouchableOpacity>
         </Card>
 
-        {/* Plan card */}
-        <View style={s.planCard}>
+        {/* Plan card — oculto hasta activar monetización */}
+        {false && <View style={s.planCard}>
           <View style={s.planLeft}>
             <View style={s.planIconWrap}>
               <Crown size={18} color={colors.amber} strokeWidth={1.75} />
@@ -155,7 +159,7 @@ export const SettingsScreen = ({ navigation }: Props) => {
               <Text style={s.mejorarText}>{isFree ? 'Mejorar' : 'Premium'}</Text>
             </TouchableOpacity>
           )}
-        </View>
+        </View>}
 
         <SectionLabel>NEGOCIO</SectionLabel>
         {renderSection(BUSINESS_SECTION)}

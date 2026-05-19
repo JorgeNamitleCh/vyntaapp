@@ -64,6 +64,7 @@ export type AppStackParamList = {
   ExportData: undefined;
   Preferences: undefined;
   HelpSupport: undefined;
+  DeleteAccount: undefined;
   BusinessEdit: undefined;
   SwitchBusiness: undefined;
   SaleDetail: { saleId: string };

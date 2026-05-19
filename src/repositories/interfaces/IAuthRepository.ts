@@ -10,5 +10,6 @@ export interface IAuthRepository {
   signInWithGoogle(): Promise<AuthCredential>;
   signInWithApple(): Promise<AuthCredential>;
   signOut(): Promise<void>;
+  deleteAccount(): Promise<void>;
   onAuthStateChanged(callback: (cred: AuthCredential | null) => void): () => void;
 }

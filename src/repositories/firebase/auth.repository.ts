@@ -61,6 +61,17 @@ export const firebaseAuthRepository: IAuthRepository = {
     return auth().signOut();
   },
 
+  async deleteAccount() {
+    const user = auth().currentUser;
+    if (!user) throw new Error('No hay sesión activa');
+    await user.delete();
+    // Revocar sesión de Google si aplica, para no dejar tokens colgados
+    try {
+      const isSignedInWithGoogle = await GoogleSignin.isSignedIn();
+      if (isSignedInWithGoogle) await GoogleSignin.revokeAccess();
+    } catch (_) {}
+  },
+
   onAuthStateChanged(callback) {
     return auth().onAuthStateChanged(user => callback(user ? toCredential(user) : null));
   },

@@ -36,6 +36,18 @@ export const authService = {
     useAuthStore.getState().clear();
   },
 
+  async deleteAccount(): Promise<void> {
+    const { user } = useAuthStore.getState();
+    if (user?.uid) {
+      await firestore().collection(COLLECTIONS.USERS).doc(user.uid).delete();
+    }
+    await repository.deleteAccount();
+    // signOut fuerza que Firebase limpie la sesión local y dispara onAuthStateChanged(null)
+    // garantizando que el RootNavigator redirija a Auth aunque el listener llegue tarde
+    try { await repository.signOut(); } catch (_) {}
+    useAuthStore.getState().clear();
+  },
+
   initAuthListener(): () => void {
     useAuthStore.getState().setLoading(true);
 
