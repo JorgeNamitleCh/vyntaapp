@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eliminación de cuenta — Vynta</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f9f9f7;
+      color: #1a1a1a;
+      line-height: 1.7;
+    }
+    header {
+      background: #0e5c3f;
+      color: #fff;
+      padding: 40px 24px 32px;
+      text-align: center;
+    }
+    header h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+    header p  { font-size: 14px; opacity: 0.75; margin-top: 6px; }
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+    h2 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0e5c3f;
+      margin: 36px 0 10px;
+    }
+    p, li { font-size: 15px; color: #333; margin-bottom: 10px; }
+    ul { padding-left: 20px; margin-bottom: 10px; }
+    li { margin-bottom: 6px; }
+    a { color: #0e5c3f; }
+    .updated {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 32px;
+    }
+    .steps {
+      counter-reset: step;
+      list-style: none;
+      padding-left: 0;
+    }
+    .steps li {
+      counter-increment: step;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+    .steps li::before {
+      content: counter(step);
+      background: #0e5c3f;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      min-width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+    .badge {
+      display: inline-block;
+      background: #e8f5ee;
+      color: #0e5c3f;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    th {
+      background: #0e5c3f;
+      color: #fff;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #e5e5e0;
+      color: #333;
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: #f2f2ef; }
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 13px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Vynta</h1>
+  <p>Eliminación de cuenta y datos</p>
+</header>
+
+<main>
+  <p class="updated">Última actualización: 20 de mayo de 2026</p>
+
+  <p>
+    <strong>Vynta</strong> es una aplicación de punto de venta (POS) para pequeños negocios en México y LATAM,
+    desarrollada por <strong>Jorge Namitle</strong>. Esta página explica cómo los usuarios pueden solicitar
+    la eliminación de su cuenta y describe qué datos se eliminan o se conservan.
+  </p>
+
+  <h2>Cómo eliminar tu cuenta</h2>
+  <p>Puedes eliminar tu cuenta directamente desde la aplicación Vynta en cualquier momento, sin necesidad de contactar a soporte. Sigue estos pasos:</p>
+
+  <ol class="steps">
+    <li>Abre la aplicación <strong>Vynta</strong> en tu dispositivo.</li>
+    <li>Ve a la sección de <strong>Configuración</strong> (ícono de engrane en la pantalla principal).</li>
+    <li>Desplázate hasta el final y toca <strong>"Eliminar cuenta"</strong>.</li>
+    <li>Confirma la acción en el diálogo de verificación.</li>
+    <li>Tu cuenta y los datos asociados serán eliminados de forma inmediata e irreversible.</li>
+  </ol>
+
+  <h2>Datos que se eliminan</h2>
+  <p>Al eliminar tu cuenta, se eliminan <strong>de forma permanente e inmediata</strong> los siguientes datos:</p>
+  <ul>
+    <li>Cuenta de autenticación (teléfono, Google o Apple ID vinculado)</li>
+    <li>Perfil de usuario (nombre, correo electrónico)</li>
+    <li>Datos del negocio (nombre, tipo de negocio)</li>
+    <li>Productos e inventario registrados</li>
+    <li>Historial de ventas y transacciones</li>
+    <li>Registro de gastos</li>
+    <li>Base de clientes</li>
+  </ul>
+
+  <h2>Datos que se conservan y períodos de retención</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Tipo de dato</th>
+        <th>¿Se conserva?</th>
+        <th>Período</th>
+        <th>Motivo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Datos de cuenta y perfil</td>
+        <td>No</td>
+        <td>Eliminación inmediata</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Historial de ventas y transacciones</td>
+        <td>No</td>
+        <td>Eliminación inmediata</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Registros de suscripción (RevenueCat)</td>
+        <td>Sí</td>
+        <td>Hasta 90 días</td>
+        <td>Cumplimiento de obligaciones de facturación y disputas con tiendas de aplicaciones</td>
+      </tr>
+      <tr>
+        <td>Registros de acceso (logs del sistema)</td>
+        <td>Sí</td>
+        <td>Hasta 30 días</td>
+        <td>Seguridad y detección de fraude</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Contacto</h2>
+  <p>
+    Si tienes problemas para eliminar tu cuenta desde la app, puedes contactarnos en:
+    <a href="mailto:georgeenami@gmail.com">georgeenami@gmail.com</a>.
+    Atenderemos tu solicitud en un plazo máximo de 30 días.
+  </p>
+</main>
+
+<footer>
+  &copy; 2026 Vynta · <a href="privacy-policy.html">Política de privacidad</a>
+</footer>
+
+</body>
+</html>

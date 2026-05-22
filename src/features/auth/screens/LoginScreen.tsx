@@ -10,6 +10,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AppleButton } from '@invertase/react-native-apple-authentication';
 import { Text } from '../../../components/Text';
 import { AppButton } from '../../../components/AppButton';
 import { BackButton } from '../../../components/BackButton';
@@ -18,10 +19,10 @@ import { useAuth } from '../hooks/useAuth';
 import { authService } from '../services/auth.service';
 import { LoginScreenProps } from '../../../navigation/types';
 import { Radius } from '../../../theme';
-import { useThemeColors, ThemeColors } from '../../../theme/ThemeContext';
+import { useTheme, ThemeColors } from '../../../theme/ThemeContext';
 
 export const LoginScreen = ({ navigation }: LoginScreenProps) => {
-  const colors = useThemeColors();
+  const { colors, isDark } = useTheme();
   const s = useMemo(() => makeStyles(colors), [colors]);
 
   const [phone, setPhone] = useState('');
@@ -128,11 +129,13 @@ export const LoginScreen = ({ navigation }: LoginScreenProps) => {
             </TouchableOpacity>
             {googleError ? <Text style={s.error}>{googleError}</Text> : null}
             {Platform.OS === 'ios' && (
-              <TouchableOpacity style={s.socialBtn} activeOpacity={0.7} onPress={handleAppleSignIn} disabled={isAppleLoading}>
-                {isAppleLoading
-                  ? <ActivityIndicator size="small" color={colors.ink} />
-                  : <><Text style={s.appleIcon}></Text><Text style={s.socialLabel}>Continuar con Apple</Text></>}
-              </TouchableOpacity>
+              <AppleButton
+                buttonStyle={isDark ? AppleButton.Style.WHITE : AppleButton.Style.BLACK}
+                buttonType={AppleButton.Type.SIGN_IN}
+                style={s.appleBtn}
+                cornerRadius={Radius.xl}
+                onPress={handleAppleSignIn}
+              />
             )}
           </View>
         </View>
@@ -189,8 +192,8 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     borderWidth: 1.5, borderColor: colors.border, backgroundColor: colors.inputBg,
   },
   googleIcon:  { fontSize: 16, fontWeight: '800', color: colors.ink },
-  appleIcon:   { fontSize: 18, color: colors.ink, lineHeight: 20 },
   socialLabel: { fontSize: 15, fontWeight: '600', color: colors.ink },
+  appleBtn:    { width: '100%', height: 52 },
 
   terms: {
     fontSize: 12, color: colors.muted, textAlign: 'center',

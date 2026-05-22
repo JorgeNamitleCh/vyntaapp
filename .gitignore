@@ -82,3 +82,4 @@ android/app/google-services.json
 
 # npm lock (using yarn)
 package-lock.json
+android/app/vynta-release.keystore
